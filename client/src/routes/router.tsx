@@ -1,0 +1,73 @@
+import { createBrowserRouter, Navigate } from 'react-router-dom'
+
+import { AdminRoute } from '@/components/common/AdminRoute'
+import { GuestRoute } from '@/components/common/GuestRoute'
+import { ProtectedRoute } from '@/components/common/ProtectedRoute'
+import { AppLayout } from '@/components/layout/AppLayout'
+import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage'
+import LoginPage from '@/features/auth/pages/LoginPage'
+import RegisterPage from '@/features/auth/pages/RegisterPage'
+import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage'
+import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage'
+import DashboardPage from '@/features/dashboard/pages/DashboardPage'
+import ProfilePage from '@/features/profile/pages/ProfilePage'
+import { AuthLayout } from '@/layouts/AuthLayout'
+import ComingSoonPage from '@/pages/ComingSoonPage'
+import NotFoundPage from '@/pages/NotFoundPage'
+import SettingsPage from '@/pages/SettingsPage'
+
+export const router = createBrowserRouter([
+  {
+    element: <GuestRoute />,
+    children: [
+      {
+        element: <AuthLayout />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+          { path: '/forgot-password', element: <ForgotPasswordPage /> },
+          { path: '/reset-password', element: <ResetPasswordPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    children: [{ path: '/verify-email', element: <VerifyEmailPage /> }],
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: '/forum', element: <ComingSoonPage /> },
+          { path: '/projects', element: <ComingSoonPage /> },
+          { path: '/tasks', element: <ComingSoonPage /> },
+          { path: '/team', element: <ComingSoonPage /> },
+          { path: '/messages', element: <ComingSoonPage /> },
+          { path: '/knowledge-base', element: <ComingSoonPage /> },
+          { path: '/files', element: <ComingSoonPage /> },
+          { path: '/calendar', element: <ComingSoonPage /> },
+          { path: '/notifications', element: <ComingSoonPage /> },
+          { path: '/profile', element: <ProfilePage /> },
+          { path: '/settings', element: <SettingsPage /> },
+          {
+            element: <AdminRoute />,
+            children: [
+              { path: '/admin', element: <ComingSoonPage /> },
+              { path: '/admin/users', element: <ComingSoonPage /> },
+              { path: '/admin/roles', element: <ComingSoonPage /> },
+              { path: '/admin/organization', element: <ComingSoonPage /> },
+              { path: '/admin/audit-logs', element: <ComingSoonPage /> },
+              { path: '/admin/system', element: <ComingSoonPage /> },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  { path: '/404', element: <NotFoundPage /> },
+  { path: '*', element: <Navigate to="/404" replace /> },
+])
