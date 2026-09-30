@@ -27,7 +27,7 @@ export const protect = catchAsync(async (req: Request, _res: Response, next: Nex
     throw ApiError.unauthorized('Session expired, please sign in again')
   }
 
-  const user = await User.findById(payload.sub)
+  const user = await User.findById(payload.sub).populate('department', 'name')
   if (!user || !user.isActive) {
     throw ApiError.unauthorized('Account not found or deactivated')
   }

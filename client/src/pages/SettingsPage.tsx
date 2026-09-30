@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { PageHeader } from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/hooks/use-theme'
 import { cn } from '@/lib/utils'
@@ -16,6 +17,8 @@ export default function SettingsPage() {
 
   return (
     <div className="flex max-w-3xl flex-col gap-6">
+      <PageHeader title="Settings" description="Preferences for your Xenospace account" />
+
       <Card>
         <CardHeader>
           <CardTitle>Appearance</CardTitle>

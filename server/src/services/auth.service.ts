@@ -4,43 +4,10 @@ import { env } from '@/config/env'
 import { User } from '@/models/User.model'
 import { sendPasswordResetEmail, sendVerificationEmail } from '@/services/email.service'
 import { ApiError } from '@/utils/ApiError'
+import { serializeUser } from '@/utils/serialize-user'
 import { generateOpaqueToken, hashToken, signAccessToken } from '@/utils/token'
 
 const REFRESH_COOKIE_MAX_AGE_MS = env.REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000
-
-function toSafeUser(user: {
-  _id: unknown
-  name: string
-  username: string
-  email: string
-  role: string
-  avatarUrl?: string | null
-  department?: string | null
-  bio?: string
-  skills: string[]
-  presenceStatus: string
-  isEmailVerified: boolean
-  lastLoginAt?: Date | null
-  createdAt: Date
-}) {
-  return {
-    id: String(user._id),
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-    avatarUrl: user.avatarUrl ?? null,
-    department: user.department ?? null,
-    bio: user.bio ?? '',
-    skills: user.skills ?? [],
-    presenceStatus: user.presenceStatus,
-    isEmailVerified: user.isEmailVerified,
-    lastLoginAt: user.lastLoginAt ?? null,
-    createdAt: user.createdAt,
-  }
-}
-
-export type SafeUser = ReturnType<typeof toSafeUser>
 
 async function register(input: {
   name: string
@@ -76,11 +43,13 @@ async function register(input: {
   const verifyLink = `${env.CLIENT_URL}/verify-email?token=${verificationToken}`
   await sendVerificationEmail(user.email, user.name, verifyLink)
 
-  return toSafeUser(user)
+  return serializeUser(user)
 }
 
 async function login(input: { email: string; password: string }) {
-  const user = await User.findOne({ email: input.email.toLowerCase() }).select('+password')
+  const user = await User.findOne({ email: input.email.toLowerCase() })
+    .select('+password')
+    .populate('department', 'name')
 
   if (!user || !(await bcrypt.compare(input.password, user.password))) {
     throw ApiError.unauthorized('Invalid email or password')
@@ -99,7 +68,7 @@ async function login(input: { email: string; password: string }) {
   user.presenceStatus = 'ONLINE'
   await user.save()
 
-  return { user: toSafeUser(user), accessToken, refreshToken }
+  return { user: serializeUser(user), accessToken, refreshToken }
 }
 
 async function refresh(refreshToken: string) {
@@ -107,7 +76,7 @@ async function refresh(refreshToken: string) {
   const user = await User.findOne({
     refreshTokenHash: tokenHash,
     refreshTokenExpires: { $gt: new Date() },
-  })
+  }).populate('department', 'name')
 
   if (!user) {
     throw ApiError.unauthorized('Session expired, please sign in again')
@@ -120,7 +89,7 @@ async function refresh(refreshToken: string) {
   user.refreshTokenExpires = new Date(Date.now() + REFRESH_COOKIE_MAX_AGE_MS)
   await user.save()
 
-  return { user: toSafeUser(user), accessToken, refreshToken: newRefreshToken }
+  return { user: serializeUser(user), accessToken, refreshToken: newRefreshToken }
 }
 
 async function logout(refreshToken: string | undefined) {
@@ -149,7 +118,7 @@ async function verifyEmail(token: string) {
   user.emailVerificationExpires = null
   await user.save()
 
-  return toSafeUser(user)
+  return serializeUser(user)
 }
 
 async function resendVerificationEmail(email: string) {
@@ -219,6 +188,5 @@ export const authService = {
   forgotPassword,
   resetPassword,
   changePassword,
-  toSafeUser,
   REFRESH_COOKIE_MAX_AGE_MS,
 }

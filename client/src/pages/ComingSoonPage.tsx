@@ -17,9 +17,9 @@ export default function ComingSoonPage() {
 
   return (
     <div className="flex h-full min-h-[60svh] items-center justify-center">
-      <Card className="max-w-md">
+      <Card variant="elevated" className="max-w-md">
         <CardContent className="flex flex-col items-center gap-3 text-center">
-          <span className="bg-muted flex size-12 items-center justify-center rounded-full">
+          <span className="glass-tile flex size-12 items-center justify-center rounded-full">
             <Construction className="text-muted-foreground size-6" />
           </span>
           <h2 className="text-lg font-semibold">{title}</h2>

@@ -4,6 +4,7 @@ import { authService } from '@/services/auth.service'
 import { ApiResponse } from '@/utils/ApiResponse'
 import { catchAsync } from '@/utils/catchAsync'
 import { clearAuthCookies, setAuthCookies } from '@/utils/cookies'
+import { serializeUser } from '@/utils/serialize-user'
 
 export const register = catchAsync(async (req: Request, res: Response) => {
   const user = await authService.register(req.body)
@@ -40,7 +41,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
 })
 
 export const me = catchAsync(async (req: Request, res: Response) => {
-  ApiResponse.send(res, 200, 'Current user', { user: authService.toSafeUser(req.user!) })
+  ApiResponse.send(res, 200, 'Current user', { user: serializeUser(req.user!) })
 })
 
 export const verifyEmail = catchAsync(async (req: Request, res: Response) => {

@@ -16,6 +16,11 @@ export const ADMIN_ROLES: Role[] = ['SUPER_ADMIN', 'ADMIN']
 
 export type PresenceStatus = 'ONLINE' | 'AWAY' | 'BUSY' | 'OFFLINE'
 
+export interface DepartmentRef {
+  id: string
+  name: string
+}
+
 export interface User {
   id: string
   name: string
@@ -23,10 +28,12 @@ export interface User {
   email: string
   role: Role
   avatarUrl: string | null
-  department: string | null
+  department: DepartmentRef | null
+  phone: string | null
   bio: string
   skills: string[]
   presenceStatus: PresenceStatus
+  isActive: boolean
   isEmailVerified: boolean
   lastLoginAt: string | null
   createdAt: string

@@ -1,104 +1,58 @@
-import { Bell, LogOut, Menu, Search, Settings, User as UserIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Bell, Menu, Plus, Search } from 'lucide-react'
 
 import { Logo } from '@/components/common/Logo'
 import { ThemeToggle } from '@/components/common/ThemeToggle'
-import { SidebarNav } from '@/components/layout/SidebarNav'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
+import { NavigatorContent } from '@/components/layout/Sidebar'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { useAuthStore } from '@/store/auth.store'
-
-function initials(name: string) {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
+import { useState } from 'react'
 
 export function Topbar() {
-  const navigate = useNavigate()
-  const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
-
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login', { replace: true })
-  }
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 flex h-14 items-center gap-3 border-b px-4 backdrop-blur">
-      <Sheet>
+    <header className="border-glass-border/60 sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b px-4 md:px-8">
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
+          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open navigator">
             <Menu className="size-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
-          <SheetHeader className="h-14 justify-center border-b">
+        <SheetContent side="left" className="glass-overlay flex w-[280px] flex-col p-0">
+          <SheetHeader className="h-14 shrink-0 justify-center px-4">
             <SheetTitle asChild>
               <Logo />
             </SheetTitle>
           </SheetHeader>
-          <SidebarNav />
+          <NavigatorContent onNavigate={() => setSheetOpen(false)} />
         </SheetContent>
       </Sheet>
 
-      <div className="relative hidden max-w-sm flex-1 sm:block">
-        <Search className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
-        <Input placeholder="Search Xenospace..." className="pl-8" />
+      <div className="relative w-full max-w-md">
+        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
+        <input
+          placeholder="Search projects, people, files…"
+          aria-label="Search Xenospace"
+          className="glass-control placeholder:text-muted-foreground focus-visible:ring-ring/40 h-10 w-full rounded-full pr-4 pl-10 text-sm outline-none focus-visible:ring-2"
+        />
       </div>
 
       <div className="ml-auto flex items-center gap-1">
-        <ThemeToggle />
+        <ThemeToggle className="rounded-full md:hidden" />
 
-        <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
-          <Bell className="size-4" />
-          <Badge className="absolute top-0.5 right-0.5 size-4 justify-center rounded-full p-0 text-[10px]">
-            3
-          </Badge>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-full"
+          aria-label="Notifications, 3 unread"
+        >
+          <Bell className="size-[18px]" />
+          <span className="bg-destructive ring-card absolute top-2 right-2 size-2 rounded-full ring-2" />
         </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="ml-1 gap-2 px-1.5">
-              <Avatar className="size-7">
-                <AvatarImage src={user?.avatarUrl ?? undefined} alt={user?.name} />
-                <AvatarFallback>{user ? initials(user.name) : 'XS'}</AvatarFallback>
-              </Avatar>
-              <span className="hidden text-sm font-medium sm:inline">{user?.name}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <p className="text-sm leading-none font-medium">{user?.name}</p>
-              <p className="text-muted-foreground mt-1 text-xs leading-none">{user?.email}</p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/profile')}>
-              <UserIcon /> Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
-              <Settings /> Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
-              <LogOut /> Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button size="sm" className="ml-1 hidden rounded-full sm:inline-flex">
+          <Plus /> New
+        </Button>
       </div>
     </header>
   )

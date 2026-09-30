@@ -49,7 +49,7 @@ export default function RegisterPage() {
 
   if (submitted) {
     return (
-      <Card>
+      <Card variant="elevated">
         <CardHeader>
           <CardTitle className="text-xl">Check your inbox</CardTitle>
           <CardDescription>
@@ -66,7 +66,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card>
+    <Card variant="elevated">
       <CardHeader>
         <CardTitle className="text-xl">Create your account</CardTitle>
         <CardDescription>Join your Xenoware team workspace</CardDescription>

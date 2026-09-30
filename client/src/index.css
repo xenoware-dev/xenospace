@@ -35,15 +35,28 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-canvas: var(--canvas);
+  --color-rail: var(--rail);
+  --color-rail-foreground: var(--rail-foreground);
+  --color-rail-muted: var(--rail-muted);
+  --color-rail-accent: var(--rail-accent);
+  --color-rail-accent-foreground: var(--rail-accent-foreground);
+  --color-data: var(--data);
+  --color-data-track: var(--data-track);
+  --color-glass: var(--glass-bg);
+  --color-glass-tile: var(--glass-tile);
+  --color-glass-border: var(--glass-border);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-3xl: calc(var(--radius) + 18px);
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 :root {
-  --radius: 0.6rem;
+  --radius: 0.75rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -75,6 +88,30 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --canvas: oklch(0.945 0 0);
+  --rail: oklch(0.19 0 0);
+  --rail-foreground: oklch(0.985 0 0);
+  --rail-muted: oklch(0.985 0 0 / 55%);
+  --rail-accent: oklch(1 0 0 / 14%);
+  --rail-accent-foreground: oklch(1 0 0);
+  --data: oklch(0.55 0.16 258);
+  --data-track: oklch(0.92 0.03 258);
+
+  /* Glass: a translucent fill, a hairline edge, a top-lit highlight, a soft drop. */
+  --glass-bg: oklch(1 0 0 / 46%);
+  --glass-tile: oklch(1 0 0 / 38%);
+  --glass-control: oklch(1 0 0 / 30%);
+  --glass-raised-bg: oklch(1 0 0 / 88%);
+  --glass-border: oklch(1 0 0 / 70%);
+  --glass-border-soft: oklch(1 0 0 / 50%);
+  --glass-highlight: oklch(1 0 0 / 80%);
+  --glass-shadow: 0 1px 2px oklch(0.2 0 0 / 6%), 0 12px 40px oklch(0.2 0 0 / 10%);
+  --glass-shadow-sm: 0 1px 3px oklch(0.2 0 0 / 6%);
+  --glass-rail-bg: oklch(0.2 0 0 / 72%);
+  --glass-rail-border: oklch(1 0 0 / 12%);
+  --glass-rail-highlight: oklch(1 0 0 / 16%);
+  --glass-blur: 28px;
+  --glass-saturate: 180%;
 }
 
 .dark {
@@ -109,6 +146,29 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --canvas: oklch(0.115 0 0);
+  --rail: oklch(0.175 0 0);
+  --rail-foreground: oklch(0.985 0 0);
+  --rail-muted: oklch(0.985 0 0 / 50%);
+  --rail-accent: oklch(1 0 0 / 12%);
+  --rail-accent-foreground: oklch(1 0 0);
+  --data: oklch(0.7 0.14 258);
+  --data-track: oklch(0.32 0.045 258);
+
+  --glass-bg: oklch(0.28 0 0 / 48%);
+  --glass-tile: oklch(1 0 0 / 7%);
+  --glass-control: oklch(1 0 0 / 6%);
+  --glass-raised-bg: oklch(0.42 0 0 / 85%);
+  --glass-border: oklch(1 0 0 / 14%);
+  --glass-border-soft: oklch(1 0 0 / 8%);
+  --glass-highlight: oklch(1 0 0 / 12%);
+  --glass-shadow: 0 1px 2px oklch(0 0 0 / 30%), 0 16px 48px oklch(0 0 0 / 45%);
+  --glass-shadow-sm: 0 1px 3px oklch(0 0 0 / 30%);
+  --glass-rail-bg: oklch(0.17 0 0 / 70%);
+  --glass-rail-border: oklch(1 0 0 / 10%);
+  --glass-rail-highlight: oklch(1 0 0 / 12%);
+  --glass-blur: 30px;
+  --glass-saturate: 170%;
 }
 
 @layer base {
@@ -116,6 +176,146 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-canvas text-foreground;
+  }
+
+  /*
+   * Ambient wallpaper. Glass only reads as glass when there is something
+   * coloured behind it to blur, so every route gets this fixed tint layer.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(64% 54% at 8% 2%, oklch(1 0 0 / 95%), transparent 68%),
+      radial-gradient(54% 48% at 94% 8%, oklch(1 0 0 / 72%), transparent 66%),
+      radial-gradient(58% 52% at 82% 98%, oklch(0.84 0 0 / 70%), transparent 68%),
+      radial-gradient(50% 46% at 18% 94%, oklch(0.88 0 0 / 60%), transparent 68%);
+  }
+
+  .dark body::before {
+    background:
+      radial-gradient(64% 54% at 8% 2%, oklch(0.34 0 0 / 90%), transparent 68%),
+      radial-gradient(54% 48% at 94% 8%, oklch(0.27 0 0 / 85%), transparent 66%),
+      radial-gradient(58% 52% at 82% 98%, oklch(0.23 0 0 / 80%), transparent 68%),
+      radial-gradient(50% 46% at 18% 94%, oklch(0.3 0 0 / 65%), transparent 68%);
+  }
+}
+
+@layer components {
+  /* Window-level glass: the rail, the navigator, the content panel, dialogs. */
+  .glass {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /*
+   * Tiles sitting inside a glass window. Deliberately no second backdrop
+   * blur — the parent already blurred the wallpaper, so these are translucent
+   * fills with an edge, which is how macOS layers them too.
+   */
+  .glass-tile {
+    background-color: var(--glass-tile);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Recessed inputs and segmented tracks. */
+  .glass-control {
+    background-color: var(--glass-control);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: inset 0 1px 2px oklch(0.2 0 0 / 6%);
+  }
+
+  .dark .glass-control {
+    box-shadow: inset 0 1px 2px oklch(0 0 0 / 25%);
+  }
+
+  /* A raised element on a recessed track: the active tab, the active nav pill. */
+  .glass-raised {
+    background-color: var(--glass-raised-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 1px 2px oklch(0.2 0 0 / 10%),
+      0 4px 12px oklch(0.2 0 0 / 8%),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .dark .glass-raised {
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 35%),
+      0 4px 12px oklch(0 0 0 / 25%),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* The dark rail, which stays dark in both themes. */
+  .glass-rail {
+    background-color: var(--glass-rail-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-rail-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rail-highlight);
+  }
+
+  /* Popovers, menus and sheets that float above the panels. */
+  .glass-overlay {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Honour a reduced-transparency preference by falling back to opaque. */
+  @media (prefers-reduced-transparency: reduce) {
+    .glass,
+    .glass-overlay,
+    .glass-rail {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .glass,
+    .glass-overlay {
+      background-color: var(--card);
+    }
+    .glass-rail {
+      background-color: var(--rail);
+    }
+    body::before {
+      display: none;
+    }
+  }
+}
+
+@layer utilities {
+  /* Slim, recessive scrollbars so inset panels keep their rounded edge. */
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+  }
+
+  /* No scrollbar at all: the rail is too narrow to spare the pixels. */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }

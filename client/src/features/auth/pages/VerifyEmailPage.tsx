@@ -42,7 +42,7 @@ export default function VerifyEmailPage() {
   }, [token])
 
   return (
-    <Card>
+    <Card variant="elevated">
       <CardHeader className="items-center text-center">
         {state === 'loading' && <Loader2 className="text-muted-foreground mb-2 size-8 animate-spin" />}
         {state === 'success' && <CheckCircle2 className="text-success mb-2 size-8" />}

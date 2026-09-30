@@ -10,7 +10,8 @@ export interface IUser extends Document {
   password: string
   role: Role
   avatarUrl?: string
-  department?: string
+  department?: Types.ObjectId | null
+  phone?: string
   bio?: string
   skills: string[]
   presenceStatus: PresenceStatus
@@ -63,7 +64,8 @@ const userSchema = new Schema<IUser>(
       default: 'MEMBER',
     },
     avatarUrl: { type: String, default: null },
-    department: { type: String, default: null, trim: true },
+    department: { type: Schema.Types.ObjectId, ref: 'Department', default: null },
+    phone: { type: String, default: null, trim: true, maxlength: 30 },
     bio: { type: String, default: '', maxlength: 500 },
     skills: { type: [String], default: [] },
     presenceStatus: {
@@ -85,5 +87,7 @@ const userSchema = new Schema<IUser>(
 )
 
 userSchema.index({ role: 1 })
+userSchema.index({ department: 1 })
+userSchema.index({ name: 'text', username: 'text', email: 'text' })
 
 export const User = model<IUser>('User', userSchema)

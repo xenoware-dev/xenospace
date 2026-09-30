@@ -11,6 +11,10 @@ import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage'
 import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import ProfilePage from '@/features/profile/pages/ProfilePage'
+import TeamDirectoryPage from '@/features/team/pages/TeamDirectoryPage'
+import TeamMemberPage from '@/features/team/pages/TeamMemberPage'
+import OrganizationSettingsPage from '@/features/admin/pages/OrganizationSettingsPage'
+import UserManagementPage from '@/features/admin/pages/UserManagementPage'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import ComingSoonPage from '@/pages/ComingSoonPage'
 import NotFoundPage from '@/pages/NotFoundPage'
@@ -45,7 +49,8 @@ export const router = createBrowserRouter([
           { path: '/forum', element: <ComingSoonPage /> },
           { path: '/projects', element: <ComingSoonPage /> },
           { path: '/tasks', element: <ComingSoonPage /> },
-          { path: '/team', element: <ComingSoonPage /> },
+          { path: '/team', element: <TeamDirectoryPage /> },
+          { path: '/team/:id', element: <TeamMemberPage /> },
           { path: '/messages', element: <ComingSoonPage /> },
           { path: '/knowledge-base', element: <ComingSoonPage /> },
           { path: '/files', element: <ComingSoonPage /> },
@@ -57,9 +62,9 @@ export const router = createBrowserRouter([
             element: <AdminRoute />,
             children: [
               { path: '/admin', element: <ComingSoonPage /> },
-              { path: '/admin/users', element: <ComingSoonPage /> },
+              { path: '/admin/users', element: <UserManagementPage /> },
               { path: '/admin/roles', element: <ComingSoonPage /> },
-              { path: '/admin/organization', element: <ComingSoonPage /> },
+              { path: '/admin/organization', element: <OrganizationSettingsPage /> },
               { path: '/admin/audit-logs', element: <ComingSoonPage /> },
               { path: '/admin/system', element: <ComingSoonPage /> },
             ],

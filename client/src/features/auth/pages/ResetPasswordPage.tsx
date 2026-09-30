@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <Card>
+      <Card variant="elevated">
         <CardHeader>
           <CardTitle className="text-xl">Invalid link</CardTitle>
           <CardDescription>This password reset link is missing or malformed.</CardDescription>
@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <Card>
+      <Card variant="elevated">
         <CardHeader>
           <CardTitle className="text-xl">Password updated</CardTitle>
           <CardDescription>You can now sign in with your new password.</CardDescription>
@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <Card>
+    <Card variant="elevated">
       <CardHeader>
         <CardTitle className="text-xl">Reset your password</CardTitle>
         <CardDescription>Choose a new password for your account</CardDescription>

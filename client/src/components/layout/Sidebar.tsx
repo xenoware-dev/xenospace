@@ -1,13 +1,34 @@
-import { Logo } from '@/components/common/Logo'
 import { SidebarNav } from '@/components/layout/SidebarNav'
+import { UserChip } from '@/components/layout/UserChip'
+import { WorkspaceTree } from '@/components/layout/WorkspaceTree'
+import { cn } from '@/lib/utils'
 
-export function Sidebar() {
+/** Panel body, shared by the desktop navigator and the mobile sheet. */
+export function NavigatorContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border hidden w-64 shrink-0 flex-col border-r md:flex">
-      <div className="border-sidebar-border flex h-14 items-center border-b px-4">
-        <Logo />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="px-2 pt-2">
+        <UserChip />
       </div>
-      <SidebarNav />
+      <div className="scrollbar-slim flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-2 py-3">
+        <SidebarNav onNavigate={onNavigate} />
+        <WorkspaceTree />
+      </div>
+    </div>
+  )
+}
+
+export function Sidebar({ open }: { open: boolean }) {
+  return (
+    <aside
+      aria-label="Navigator"
+      aria-hidden={!open}
+      className={cn(
+        'glass text-card-foreground hidden shrink-0 flex-col overflow-hidden rounded-3xl transition-[width,opacity] duration-300 ease-out md:flex',
+        open ? 'w-[264px] opacity-100' : 'pointer-events-none w-0 opacity-0'
+      )}
+    >
+      <NavigatorContent />
     </aside>
   )
 }

@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <Card>
+      <Card variant="elevated">
         <CardHeader>
           <CardTitle className="text-xl">Check your inbox</CardTitle>
           <CardDescription>
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card>
+    <Card variant="elevated">
       <CardHeader>
         <CardTitle className="text-xl">Forgot your password?</CardTitle>
         <CardDescription>Enter your email and we&apos;ll send you a reset link</CardDescription>

@@ -52,7 +52,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
+    <Card variant="elevated">
       <CardHeader>
         <CardTitle className="text-xl">Welcome back</CardTitle>
         <CardDescription>Sign in to your Xenospace workspace</CardDescription>

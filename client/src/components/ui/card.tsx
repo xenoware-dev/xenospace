@@ -1,17 +1,35 @@
 import * as React from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
+/**
+ * The in-panel surface recipe. Content sits on a rounded panel, so tiles read as
+ * soft insets rather than floating cards — use this for ad-hoc tiles too.
+ */
+export const softSurface = 'glass-tile rounded-2xl'
+
+const cardVariants = cva('text-card-foreground flex flex-col gap-6 rounded-2xl py-6', {
+  variants: {
+    variant: {
+      /** Inset tile on a glass panel. */
+      soft: 'glass-tile',
+      /** A glass window in its own right — auth screens, dialogs, empty states. */
+      elevated: 'glass',
+    },
+  },
+  defaultVariants: {
+    variant: 'soft',
+  },
+})
+
+function Card({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof cardVariants>) {
   return (
-    <div
-      data-slot="card"
-      className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
-        className
-      )}
-      {...props}
-    />
+    <div data-slot="card" className={cn(cardVariants({ variant, className }))} {...props} />
   )
 }
 
@@ -83,6 +101,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
 
 export {
   Card,
+  cardVariants,
   CardHeader,
   CardFooter,
   CardTitle,
