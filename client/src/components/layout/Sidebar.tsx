@@ -24,8 +24,10 @@ export function Sidebar({ open }: { open: boolean }) {
       aria-label="Navigator"
       aria-hidden={!open}
       className={cn(
-        'glass text-card-foreground hidden shrink-0 flex-col overflow-hidden rounded-3xl transition-[width,opacity] duration-300 ease-out md:flex',
-        open ? 'w-[264px] opacity-100' : 'pointer-events-none w-0 opacity-0'
+        'glass text-card-foreground hidden shrink-0 flex-col overflow-hidden rounded-3xl transition-[width,opacity,transform] duration-[var(--motion-view-in)] ease-[var(--ease-glass)] md:flex',
+        open
+          ? 'w-[264px] translate-x-0 opacity-100'
+          : 'pointer-events-none w-0 -translate-x-2 opacity-0'
       )}
     >
       <NavigatorContent />

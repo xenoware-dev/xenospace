@@ -7,7 +7,7 @@ import { workspaceTree, type WorkspaceNode } from '@/config/nav'
 import { cn } from '@/lib/utils'
 
 const rowBase =
-  'group flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-sm transition-colors'
+  'group flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-sm transition-[color,background-color] duration-[var(--motion-control)] ease-[var(--ease-glass)]'
 
 function matches(node: WorkspaceNode, query: string): boolean {
   if (!query) return true
@@ -45,7 +45,10 @@ function TreeNode({ node, query, root = true }: { node: WorkspaceNode; query: st
         className={cn(rowBase, 'text-foreground hover:bg-glass-tile font-medium')}
       >
         <ChevronRight
-          className={cn('size-3.5 shrink-0 transition-transform', expanded && 'rotate-90')}
+          className={cn(
+            'size-3.5 shrink-0 transition-transform duration-[var(--motion-control)] ease-[var(--ease-glass)]',
+            expanded && 'rotate-90'
+          )}
         />
         {expanded ? (
           <FolderOpen className="size-3.5 shrink-0" />
@@ -56,7 +59,7 @@ function TreeNode({ node, query, root = true }: { node: WorkspaceNode; query: st
         <span className="text-muted-foreground/70 text-xs tabular-nums">{node.count}</span>
       </button>
       {expanded && (
-        <div className="border-glass-border ml-[18px] flex flex-col gap-0.5 border-l pl-1">
+        <div className="border-glass-border animate-branch-enter ml-[18px] flex flex-col gap-0.5 border-l pl-1">
           {visibleChildren.map((child) => (
             <TreeNode key={child.name} node={child} query={query} root={false} />
           ))}

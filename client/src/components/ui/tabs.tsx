@@ -40,7 +40,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:bg-[var(--glass-raised-bg)] data-[state=active]:border-glass-border data-[state=active]:shadow-[0_1px_2px_oklch(0.2_0_0/10%),0_4px_12px_oklch(0.2_0_0/8%),inset_0_1px_0_var(--glass-highlight)] data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-full border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4",
+        "data-[state=active]:bg-[var(--glass-raised-bg)] data-[state=active]:border-glass-border data-[state=active]:shadow-[0_1px_2px_oklch(0.2_0_0/10%),0_4px_12px_oklch(0.2_0_0/8%),inset_0_1px_0_var(--glass-highlight)] data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-full border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-control)] ease-[var(--ease-glass)] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -55,7 +55,11 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn('flex-1 outline-none', className)}
+      className={cn(
+        // The panel that just became active plays the shared view-change motion.
+        'flex-1 outline-none data-[state=active]:animate-tab-enter',
+        className
+      )}
       {...props}
     />
   )

@@ -112,6 +112,19 @@
   --glass-rail-highlight: oklch(1 0 0 / 16%);
   --glass-blur: 28px;
   --glass-saturate: 180%;
+
+  /*
+   * Motion. One easing curve for everything that moves (a decelerating
+   * "settle" that suits translucent panels) and a small set of durations so
+   * route changes, tab changes and the navigator all share a tempo.
+   */
+  --ease-glass: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-glass-in: cubic-bezier(0.4, 0, 0.7, 0.2);
+  --motion-view-in: 520ms;
+  --motion-view-out: 180ms;
+  --motion-tab: 420ms;
+  --motion-indicator: 400ms;
+  --motion-control: 260ms;
 }
 
 .dark {
@@ -272,6 +285,32 @@
     box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
   }
 
+  /*
+   * The sliding glass pill behind the active navigator / rail item. It is one
+   * element per nav that is moved to the active row, so switching sections
+   * reads as the highlight travelling rather than one pill blinking out and
+   * another blinking in.
+   */
+  .nav-indicator {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      transform var(--motion-indicator) var(--ease-glass),
+      width var(--motion-indicator) var(--ease-glass),
+      height var(--motion-indicator) var(--ease-glass),
+      opacity var(--motion-control) ease-out;
+  }
+
+  /* Before the first measurement it must not slide in from the origin. */
+  .nav-indicator[data-ready='false'] {
+    transition: none;
+  }
+
+  .nav-indicator[data-visible='true'] {
+    opacity: 1;
+  }
+
   /* Honour a reduced-transparency preference by falling back to opaque. */
   @media (prefers-reduced-transparency: reduce) {
     .glass,
@@ -317,5 +356,89 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/*
+ * Shared view/tab motion. Every switch between sections — a route change from
+ * the rail or navigator, a Radix tab change, a branch opening in the workspace
+ * tree — plays one of these, so the whole app changes views at the same tempo.
+ */
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes view-leave {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.996);
+  }
+}
+
+@keyframes tab-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes branch-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer utilities {
+  /* The routed page. `data-stage` is driven by RouteTransition. */
+  .route-view {
+    animation: view-enter var(--motion-view-in) var(--ease-glass) both;
+  }
+
+  .route-view[data-stage='leave'] {
+    animation: view-leave var(--motion-view-out) var(--ease-glass-in) both;
+  }
+
+  .animate-tab-enter {
+    animation: tab-enter var(--motion-tab) var(--ease-glass) both;
+  }
+
+  .animate-branch-enter {
+    animation: branch-enter var(--motion-control) var(--ease-glass) both;
+  }
+}
+
+/* Anyone who asks for less motion gets the state change without the travel. */
+@media (prefers-reduced-motion: reduce) {
+  .route-view,
+  .route-view[data-stage='leave'],
+  .animate-tab-enter,
+  .animate-branch-enter {
+    animation: none;
+  }
+  .route-view[data-stage='leave'] {
+    opacity: 0;
+  }
+  .nav-indicator {
+    transition: opacity var(--motion-control) ease-out;
   }
 }
