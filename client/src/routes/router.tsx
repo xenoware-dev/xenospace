@@ -11,6 +11,9 @@ import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage'
 import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import ProfilePage from '@/features/profile/pages/ProfilePage'
+import ProjectDetailPage from '@/features/projects/pages/ProjectDetailPage'
+import ProjectsPage from '@/features/projects/pages/ProjectsPage'
+import TasksPage from '@/features/tasks/pages/TasksPage'
 import TeamDirectoryPage from '@/features/team/pages/TeamDirectoryPage'
 import TeamMemberPage from '@/features/team/pages/TeamMemberPage'
 import OrganizationSettingsPage from '@/features/admin/pages/OrganizationSettingsPage'
@@ -47,8 +50,9 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardPage /> },
           { path: '/forum', element: <ComingSoonPage /> },
-          { path: '/projects', element: <ComingSoonPage /> },
-          { path: '/tasks', element: <ComingSoonPage /> },
+          { path: '/projects', element: <ProjectsPage /> },
+          { path: '/projects/:id', element: <ProjectDetailPage /> },
+          { path: '/tasks', element: <TasksPage /> },
           { path: '/team', element: <TeamDirectoryPage /> },
           { path: '/team/:id', element: <TeamMemberPage /> },
           { path: '/messages', element: <ComingSoonPage /> },
