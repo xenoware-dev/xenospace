@@ -3,48 +3,12 @@ import { Project } from '@/models/Project.model'
 import { Task } from '@/models/Task.model'
 import type { Role } from '@/types/enums'
 import { idOf } from '@/utils/refs'
-
-const WEEKS = 12
+import { addUtcDays, alignWeekly, recentWeekStarts } from '@/utils/weeks'
 
 interface Actor {
   id: string
   role: Role
 }
-
-/**
- * Weeks are bucketed in UTC so the boundaries the aggregation produces line up
- * with the ones computed here. Monday starts the week.
- */
-function startOfUtcWeek(date: Date) {
-  const start = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-  )
-  const weekday = start.getUTCDay() || 7
-  start.setUTCDate(start.getUTCDate() - (weekday - 1))
-  return start
-}
-
-function addUtcDays(date: Date, days: number) {
-  const next = new Date(date)
-  next.setUTCDate(next.getUTCDate() + days)
-  return next
-}
-
-function startOfToday() {
-  const date = new Date()
-  date.setHours(0, 0, 0, 0)
-  return date
-}
-
-/** The last `WEEKS` week-start dates, oldest first, ending with the current week. */
-function recentWeekStarts() {
-  const current = startOfUtcWeek(new Date())
-  return Array.from({ length: WEEKS }, (_, index) =>
-    addUtcDays(current, (index - (WEEKS - 1)) * 7)
-  )
-}
-
-const weekKey = (date: Date) => date.toISOString().slice(0, 10)
 
 /** Counts per week for a date field, aligned to `weeks` and zero-filled. */
 async function weeklyCounts(field: 'completedAt' | 'createdAt', weeks: Date[]) {
@@ -58,8 +22,13 @@ async function weeklyCounts(field: 'completedAt' | 'createdAt', weeks: Date[]) {
     },
   ])
 
-  const byWeek = new Map(rows.map((row) => [weekKey(row._id), row.count]))
-  return weeks.map((week) => byWeek.get(weekKey(week)) ?? 0)
+  return alignWeekly(rows, weeks)
+}
+
+function startOfToday() {
+  const date = new Date()
+  date.setHours(0, 0, 0, 0)
+  return date
 }
 
 function percentChange(current: number, previous: number) {

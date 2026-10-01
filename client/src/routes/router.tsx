@@ -18,6 +18,7 @@ import ProjectsPage from '@/features/projects/pages/ProjectsPage'
 import TasksPage from '@/features/tasks/pages/TasksPage'
 import TeamDirectoryPage from '@/features/team/pages/TeamDirectoryPage'
 import TeamMemberPage from '@/features/team/pages/TeamMemberPage'
+import AdminDashboardPage from '@/features/admin/pages/AdminDashboardPage'
 import OrganizationSettingsPage from '@/features/admin/pages/OrganizationSettingsPage'
 import UserManagementPage from '@/features/admin/pages/UserManagementPage'
 import { AuthLayout } from '@/layouts/AuthLayout'
@@ -67,7 +68,7 @@ export const router = createBrowserRouter([
           {
             element: <AdminRoute />,
             children: [
-              { path: '/admin', element: <ComingSoonPage /> },
+              { path: '/admin', element: <AdminDashboardPage /> },
               { path: '/admin/users', element: <UserManagementPage /> },
               { path: '/admin/roles', element: <ComingSoonPage /> },
               { path: '/admin/organization', element: <OrganizationSettingsPage /> },

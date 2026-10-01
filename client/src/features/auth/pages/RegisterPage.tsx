@@ -16,14 +16,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
-  AuthDivider,
   AuthFooterNote,
   AuthHeading,
   AuthSubmit,
   authField,
+  authLabel,
   authLink,
   PasswordField,
-  SocialAuthButtons,
 } from '@/features/auth/components/auth-ui'
 import { registerSchema, type RegisterValues } from '@/features/auth/schemas'
 import { authApi } from '@/services/auth.service'
@@ -58,7 +57,7 @@ export default function RegisterPage() {
         />
         <Button
           asChild
-          className="h-11 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
+          className="h-12 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
         >
           <Link to="/login">Back to sign in</Link>
         </Button>
@@ -69,22 +68,19 @@ export default function RegisterPage() {
   return (
     <div>
       <AuthHeading
-        title="Sign Up Account"
+        title="Create Account"
         description="Enter your personal data to create your account."
       />
 
-      <SocialAuthButtons />
-      <AuthDivider />
-
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-3">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Full Name</FormLabel>
+                <FormItem className="gap-2">
+                  <FormLabel className={authLabel}>Full Name</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="eg. Ada Lovelace"
@@ -101,8 +97,8 @@ export default function RegisterPage() {
               control={form.control}
               name="username"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Username</FormLabel>
+                <FormItem className="gap-2">
+                  <FormLabel className={authLabel}>Username</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="eg. ada"
@@ -120,8 +116,8 @@ export default function RegisterPage() {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Email</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>Email</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -139,8 +135,8 @@ export default function RegisterPage() {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Password</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>Password</FormLabel>
                 <PasswordField
                   placeholder="Enter your password"
                   autoComplete="new-password"
@@ -149,7 +145,7 @@ export default function RegisterPage() {
                 {form.formState.errors.password ? (
                   <FormMessage />
                 ) : (
-                  <p className="text-xs text-white/40">Must be at least 8 characters.</p>
+                  <p className="text-xs text-white/40">At least 8 characters, with upper and lowercase letters and a number.</p>
                 )}
               </FormItem>
             )}
@@ -158,8 +154,8 @@ export default function RegisterPage() {
             control={form.control}
             name="confirmPassword"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Confirm Password</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>Confirm Password</FormLabel>
                 <PasswordField
                   placeholder="Re-enter your password"
                   autoComplete="new-password"
@@ -169,7 +165,7 @@ export default function RegisterPage() {
               </FormItem>
             )}
           />
-          <AuthSubmit pending={form.formState.isSubmitting}>Sign Up</AuthSubmit>
+          <AuthSubmit pending={form.formState.isSubmitting}>Create account</AuthSubmit>
         </form>
       </Form>
 

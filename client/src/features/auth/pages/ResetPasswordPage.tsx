@@ -10,13 +10,14 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/
 import {
   AuthHeading,
   AuthSubmit,
+  authLabel,
   authLink,
   PasswordField,
 } from '@/features/auth/components/auth-ui'
 import { resetPasswordSchema, type ResetPasswordValues } from '@/features/auth/schemas'
 import { authApi } from '@/services/auth.service'
 
-const solidAction = 'h-11 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90'
+const solidAction = 'h-12 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90'
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -82,13 +83,13 @@ export default function ResetPasswordPage() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">New Password</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>New Password</FormLabel>
                 <PasswordField
                   placeholder="Enter your new password"
                   autoComplete="new-password"
@@ -97,7 +98,7 @@ export default function ResetPasswordPage() {
                 {form.formState.errors.password ? (
                   <FormMessage />
                 ) : (
-                  <p className="text-xs text-white/40">Must be at least 8 characters.</p>
+                  <p className="text-xs text-white/40">At least 8 characters, with upper and lowercase letters and a number.</p>
                 )}
               </FormItem>
             )}
@@ -106,8 +107,8 @@ export default function ResetPasswordPage() {
             control={form.control}
             name="confirmPassword"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Confirm New Password</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>Confirm New Password</FormLabel>
                 <PasswordField
                   placeholder="Re-enter your new password"
                   autoComplete="new-password"

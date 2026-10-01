@@ -18,6 +18,7 @@ import {
   AuthHeading,
   AuthSubmit,
   authField,
+  authLabel,
   authLink,
 } from '@/features/auth/components/auth-ui'
 import { forgotPasswordSchema, type ForgotPasswordValues } from '@/features/auth/schemas'
@@ -45,7 +46,7 @@ export default function ForgotPasswordPage() {
         />
         <Button
           asChild
-          className="h-11 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
+          className="h-12 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
         >
           <Link to="/login">Back to sign in</Link>
         </Button>
@@ -61,17 +62,17 @@ export default function ForgotPasswordPage() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Email</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>Email address</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="eg. johnfrans@gmail.com"
+                    placeholder="e.g. jhon@gmail.com"
                     autoComplete="email"
                     className={authField}
                     {...field}
