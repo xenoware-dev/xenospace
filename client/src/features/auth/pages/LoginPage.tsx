@@ -14,14 +14,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
-  AuthDivider,
   AuthFooterNote,
   AuthHeading,
   AuthSubmit,
   authField,
+  authLabel,
   authLink,
   PasswordField,
-  SocialAuthButtons,
 } from '@/features/auth/components/auth-ui'
 import { loginSchema, type LoginValues } from '@/features/auth/schemas'
 import { authApi } from '@/services/auth.service'
@@ -55,25 +54,22 @@ export default function LoginPage() {
   return (
     <div>
       <AuthHeading
-        title="Sign In Account"
+        title="Welcome Back"
         description="Enter your credentials to open your workspace."
       />
 
-      <SocialAuthButtons />
-      <AuthDivider />
-
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Email</FormLabel>
+              <FormItem className="gap-2">
+                <FormLabel className={authLabel}>Email address</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="eg. johnfrans@gmail.com"
+                    placeholder="e.g. jhon@gmail.com"
                     autoComplete="email"
                     className={authField}
                     {...field}
@@ -87,10 +83,13 @@ export default function LoginPage() {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="gap-2">
                 <div className="flex items-center justify-between">
-                  <FormLabel className="text-white">Password</FormLabel>
-                  <Link to="/forgot-password" className="text-xs text-white/50 hover:text-white">
+                  <FormLabel className={authLabel}>Password</FormLabel>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-white/45 transition-colors hover:text-white"
+                  >
                     Forgot password?
                   </Link>
                 </div>
@@ -103,7 +102,7 @@ export default function LoginPage() {
               </FormItem>
             )}
           />
-          <AuthSubmit pending={form.formState.isSubmitting}>Sign In</AuthSubmit>
+          <AuthSubmit pending={form.formState.isSubmitting}>Sign in</AuthSubmit>
         </form>
       </Form>
 

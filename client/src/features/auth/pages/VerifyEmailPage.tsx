@@ -63,7 +63,7 @@ export default function VerifyEmailPage() {
       {state !== 'loading' && (
         <Button
           asChild
-          className="h-11 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
+          className="h-12 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
         >
           <Link to="/login">Back to sign in</Link>
         </Button>
