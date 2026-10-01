@@ -72,7 +72,11 @@ export function DayPeek({ day, events, onAdd, onOpenEvent }: DayPeekProps) {
           <div className="flex flex-col gap-1.5">
             {ordered.map((event) => (
               <div key={event.id} className="flex flex-col gap-0.5">
-                <EventChip event={event} onOpen={onOpenEvent} />
+                <EventChip
+                  event={event}
+                  draggableId={`peek:${event.id}`}
+                  onOpen={onOpenEvent}
+                />
                 {event.kind !== 'TASK' && (
                   <Link
                     to={`/projects/${event.sourceId}`}

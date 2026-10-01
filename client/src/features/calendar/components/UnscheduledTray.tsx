@@ -58,7 +58,12 @@ export function UnscheduledTray({ tasks, isLoading, onOpenEvent }: UnscheduledTr
             </p>
             <div className="scrollbar-slim flex max-h-72 flex-col gap-1.5 overflow-y-auto">
               {tasks.map((task) => (
-                <EventChip key={task.id} event={taskAsEvent(task)} onOpen={onOpenEvent} />
+                <EventChip
+                  key={task.id}
+                  event={taskAsEvent(task)}
+                  draggableId={`tray:${task.id}`}
+                  onOpen={onOpenEvent}
+                />
               ))}
             </div>
           </>

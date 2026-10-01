@@ -264,7 +264,7 @@ export default function CalendarPage() {
     setActiveEvent((dragEvent.active.data.current?.event as CalendarEvent | undefined) ?? null)
 
   const handleDragEnd = (dragEvent: DragEndEvent) => {
-    const event = activeEvent
+    const event = activeEvent ?? (dragEvent.active.data.current?.event as CalendarEvent | undefined)
     setActiveEvent(null)
 
     const target = dragEvent.over?.data.current
@@ -538,7 +538,7 @@ export default function CalendarPage() {
         {createPortal(
           <DragOverlay dropAnimation={{ duration: 180, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}>
             {activeEvent && (
-              <div className="w-48 rotate-2">
+              <div className="pointer-events-none w-48 rotate-2">
                 <ChipFace event={activeEvent} isDragging />
               </div>
             )}

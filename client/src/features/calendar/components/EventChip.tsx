@@ -1,4 +1,4 @@
-import { useDraggable } from '@dnd-kit/core'
+import { useDndContext, useDraggable } from '@dnd-kit/core'
 import { CheckCircle2 } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -11,6 +11,7 @@ interface ChipProps {
   event: CalendarEvent
   /** Month cells are short on room, so they drop the owner and the reference. */
   compact?: boolean
+  draggableId?: string
   onOpen?: (event: CalendarEvent) => void
 }
 
@@ -85,13 +86,18 @@ export function ChipFace({
  * The pointer sensor's distance threshold means a press that does not travel
  * stays a click, so opening and dragging can share the one element.
  */
-export function EventChip({ event, compact, onOpen }: ChipProps) {
+export function EventChip({ event, compact, draggableId, onOpen }: ChipProps) {
   const draggable = !event.isDone
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: event.id,
+    id: draggableId ?? event.id,
     data: { type: 'event', event },
     disabled: !draggable,
   })
+
+  const { active } = useDndContext()
+  const isEventBeingDragged =
+    (active?.data?.current?.event as CalendarEvent | undefined)?.id === event.id
+  const dim = isDragging || isEventBeingDragged
 
   return (
     <div
@@ -102,12 +108,12 @@ export function EventChip({ event, compact, onOpen }: ChipProps) {
         'touch-none rounded-lg',
         'focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none',
         draggable && 'cursor-grab active:cursor-grabbing',
-        isDragging && 'opacity-40'
+        dim && 'opacity-40'
       )}
       {...attributes}
       {...listeners}
     >
-      <ChipFace event={event} compact={compact} isDragging={isDragging} />
+      <ChipFace event={event} compact={compact} isDragging={dim} />
     </div>
   )
 }

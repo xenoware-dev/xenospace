@@ -70,7 +70,11 @@ export function AgendaList({ days, eventsByDay, onOpenEvent }: AgendaListProps) 
           <div className="flex min-w-0 flex-col gap-1.5">
             {events.map((event) => (
               <div key={event.id} className="flex items-center gap-2">
-                <EventChip event={event} onOpen={onOpenEvent} />
+                <EventChip
+                  event={event}
+                  draggableId={`agenda:${dayKey(day)}:${event.id}`}
+                  onOpen={onOpenEvent}
+                />
                 {event.project && event.kind === 'TASK' && (
                   <span className="text-muted-foreground hidden shrink-0 text-[11px] md:inline">
                     {event.project.name}

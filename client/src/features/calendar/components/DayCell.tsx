@@ -104,7 +104,13 @@ export function DayCell({
 
       <div className="flex min-h-0 flex-col gap-1">
         {shown.map((event) => (
-          <EventChip key={event.id} event={event} compact onOpen={onOpenEvent} />
+          <EventChip
+            key={event.id}
+            event={event}
+            draggableId={`cell:${key}:${event.id}`}
+            compact
+            onOpen={onOpenEvent}
+          />
         ))}
 
         {hidden > 0 && (
