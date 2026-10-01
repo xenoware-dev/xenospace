@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
 import { ChevronRight, Folder, FolderOpen, Plus, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { SectionLabel } from '@/components/layout/SidebarNav'
 import { Button } from '@/components/ui/button'
-import { workspaceTree, type WorkspaceNode } from '@/config/nav'
 import { cn } from '@/lib/utils'
+import { useWorkspaceStore } from '@/store/workspace.store'
+import type { WorkspaceNode } from '@/types/dashboard'
 
 const rowBase =
   'group flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-sm transition-[color,background-color] duration-[var(--motion-control)] ease-[var(--ease-glass)]'
@@ -15,7 +17,15 @@ function matches(node: WorkspaceNode, query: string): boolean {
   return (node.children ?? []).some((child) => matches(child, query))
 }
 
-function TreeNode({ node, query, root = true }: { node: WorkspaceNode; query: string; root?: boolean }) {
+function TreeNode({
+  node,
+  query,
+  root = true,
+}: {
+  node: WorkspaceNode
+  query: string
+  root?: boolean
+}) {
   const hasChildren = Boolean(node.children?.length)
   const [open, setOpen] = useState(root)
   // A search hit inside a collapsed branch should reveal it.
@@ -24,14 +34,27 @@ function TreeNode({ node, query, root = true }: { node: WorkspaceNode; query: st
   const visibleChildren = (node.children ?? []).filter((child) => matches(child, query))
 
   if (!hasChildren) {
-    return (
-      <button
-        type="button"
-        className={cn(rowBase, 'text-muted-foreground hover:bg-glass-tile hover:text-foreground')}
-      >
+    const leafClass = cn(
+      rowBase,
+      'text-muted-foreground hover:bg-glass-tile hover:text-foreground'
+    )
+
+    const body = (
+      <>
         <Folder className="size-3.5 shrink-0" />
         <span className="flex-1 truncate">{node.name}</span>
         <span className="text-muted-foreground/70 text-xs tabular-nums">{node.count}</span>
+      </>
+    )
+
+    // Project rows navigate; a bare group with no children stays inert.
+    return node.url ? (
+      <Link to={node.url} className={leafClass}>
+        {body}
+      </Link>
+    ) : (
+      <button type="button" className={leafClass}>
+        {body}
       </button>
     )
   }
@@ -73,17 +96,22 @@ export function WorkspaceTree() {
   const [query, setQuery] = useState('')
   const normalized = query.trim().toLowerCase()
 
+  const tree = useWorkspaceStore((s) => s.overview?.tree)
+  const status = useWorkspaceStore((s) => s.status)
+
   const roots = useMemo(
-    () => workspaceTree.filter((node) => matches(node, normalized)),
-    [normalized]
+    () => (tree ?? []).filter((node) => matches(node, normalized)),
+    [tree, normalized]
   )
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between pr-1">
         <SectionLabel>Workspaces</SectionLabel>
-        <Button variant="ghost" size="icon" className="-mt-1 size-6" aria-label="New workspace">
-          <Plus className="size-3.5" />
+        <Button variant="ghost" size="icon" className="-mt-1 size-6" asChild>
+          <Link to="/projects" aria-label="New project">
+            <Plus className="size-3.5" />
+          </Link>
         </Button>
       </div>
 
@@ -94,7 +122,7 @@ export function WorkspaceTree() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search workspaces"
           aria-label="Search workspaces"
-          className="glass-control placeholder:text-muted-foreground focus-visible:ring-ring/40 h-9 w-full rounded-xl pl-9 pr-3 text-sm outline-none focus-visible:ring-2"
+          className="glass-control placeholder:text-muted-foreground focus-visible:ring-ring/40 h-9 w-full rounded-xl pr-3 pl-9 text-sm outline-none focus-visible:ring-2"
         />
       </div>
 
@@ -102,7 +130,13 @@ export function WorkspaceTree() {
         {roots.length > 0 ? (
           roots.map((node) => <TreeNode key={node.name} node={node} query={normalized} />)
         ) : (
-          <p className="text-muted-foreground px-2.5 py-2 text-xs">No matching workspaces.</p>
+          <p className="text-muted-foreground px-2.5 py-2 text-xs">
+            {!tree && status !== 'error'
+              ? 'Loading…'
+              : normalized
+                ? 'No matching workspaces.'
+                : 'No projects yet.'}
+          </p>
         )}
       </div>
     </div>

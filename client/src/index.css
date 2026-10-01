@@ -286,6 +286,37 @@
   }
 
   /*
+   * The auth screen. Like the rail, it stays dark in both themes, so the
+   * sign-in flow reads the same whichever theme the browser last stored.
+   */
+  .auth-canvas {
+    background-color: oklch(0.07 0 0);
+  }
+
+  /*
+   * The aurora panel beside the sign-in form: a violet bloom at the top
+   * dissolving into black. This is the one surface in the app that carries
+   * hue — every panel behind the signed-in UI stays greyscale.
+   */
+  .auth-aurora {
+    background-color: oklch(0.07 0 0);
+    background-image:
+      radial-gradient(
+        98% 44% at 50% -8%,
+        oklch(0.82 0.19 303 / 98%) 0%,
+        oklch(0.64 0.27 301 / 85%) 38%,
+        transparent 76%
+      ),
+      radial-gradient(150% 66% at 50% -24%, oklch(0.68 0.24 300 / 72%) 0%, transparent 68%),
+      linear-gradient(
+        180deg,
+        oklch(0.32 0.09 300 / 55%) 0%,
+        oklch(0.13 0.03 300 / 70%) 48%,
+        oklch(0.07 0 0) 84%
+      );
+  }
+
+  /*
    * The sliding glass pill behind the active navigator / rail item. It is one
    * element per nav that is moved to the active row, so switching sections
    * reads as the highlight travelling rather than one pill blinking out and

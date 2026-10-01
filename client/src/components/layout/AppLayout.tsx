@@ -1,13 +1,21 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { RailNav } from '@/components/layout/RailNav'
 import { RouteTransition } from '@/components/layout/RouteTransition'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Topbar } from '@/components/layout/Topbar'
+import { useWorkspaceStore } from '@/store/workspace.store'
 
 export function AppLayout() {
   const [navigatorOpen, setNavigatorOpen] = useState(true)
   const mainRef = useRef<HTMLElement>(null)
+  const loadWorkspace = useWorkspaceStore((s) => s.load)
+
+  // The sidebar counts and navigator tree come from the same payload as the
+  // dashboard, so it is fetched once for the whole shell.
+  useEffect(() => {
+    void loadWorkspace()
+  }, [loadWorkspace])
 
   return (
     <div className="flex h-svh w-full gap-2 overflow-hidden p-2 md:p-3">

@@ -4,13 +4,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { AuthHeading } from '@/features/auth/components/auth-ui'
 import { authApi } from '@/services/auth.service'
 
 type State = 'loading' | 'success' | 'error'
@@ -42,28 +36,38 @@ export default function VerifyEmailPage() {
   }, [token])
 
   return (
-    <Card variant="elevated">
-      <CardHeader className="items-center text-center">
-        {state === 'loading' && <Loader2 className="text-muted-foreground mb-2 size-8 animate-spin" />}
-        {state === 'success' && <CheckCircle2 className="text-success mb-2 size-8" />}
-        {state === 'error' && <XCircle className="text-destructive mb-2 size-8" />}
-        <CardTitle className="text-xl">
-          {state === 'loading' && 'Verifying your email...'}
-          {state === 'success' && 'Email verified'}
-          {state === 'error' && 'Verification failed'}
-        </CardTitle>
-        <CardDescription>
-          {state === 'success' && 'Your email address has been verified. You can now sign in.'}
-          {state === 'error' && message}
-        </CardDescription>
-      </CardHeader>
+    <div className="text-center">
+      <div className="mb-5 flex justify-center">
+        {state === 'loading' && <Loader2 className="size-8 animate-spin text-white/50" />}
+        {state === 'success' && <CheckCircle2 className="text-success size-8" />}
+        {state === 'error' && <XCircle className="text-destructive size-8" />}
+      </div>
+
+      <AuthHeading
+        title={
+          state === 'loading'
+            ? 'Verifying Your Email'
+            : state === 'success'
+              ? 'Email Verified'
+              : 'Verification Failed'
+        }
+        description={
+          state === 'success'
+            ? 'Your email address has been verified. You can now sign in.'
+            : state === 'error'
+              ? message
+              : undefined
+        }
+      />
+
       {state !== 'loading' && (
-        <CardContent>
-          <Button asChild className="w-full">
-            <Link to="/login">Back to sign in</Link>
-          </Button>
-        </CardContent>
+        <Button
+          asChild
+          className="h-11 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90"
+        >
+          <Link to="/login">Back to sign in</Link>
+        </Button>
       )}
-    </Card>
+    </div>
   )
 }

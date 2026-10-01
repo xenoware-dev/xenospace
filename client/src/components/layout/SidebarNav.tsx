@@ -4,9 +4,10 @@ import { adminNavItems, historyNavItems, mainNavGroups, type NavItem } from '@/c
 import { useActiveIndicator } from '@/hooks/use-active-indicator'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth.store'
+import { useWorkspaceStore } from '@/store/workspace.store'
 import { ADMIN_ROLES } from '@/types/auth'
 
-function NavRow({ title, url, icon: Icon, count }: NavItem) {
+function NavRow({ title, url, icon: Icon, count }: NavItem & { count?: number }) {
   return (
     <NavLink
       to={url}
@@ -41,6 +42,16 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const role = useAuthStore((s) => s.user?.role)
   const isAdmin = role ? ADMIN_ROLES.includes(role) : false
   const { containerRef, box, ready } = useActiveIndicator<HTMLElement>()
+  const counts = useWorkspaceStore((s) => s.overview?.counts)
+
+  // Only the sections backed by real data carry a badge; the rest stay bare
+  // until those features exist, rather than showing an invented number.
+  const countFor = (url: string) => {
+    if (!counts) return undefined
+    if (url === '/projects') return counts.projects
+    if (url === '/tasks') return counts.tasks
+    return undefined
+  }
 
   return (
     <nav ref={containerRef} className="relative flex flex-col gap-5" onClick={onNavigate}>
@@ -63,7 +74,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         <div key={group.label} className="flex flex-col gap-0.5">
           <SectionLabel>{group.label}</SectionLabel>
           {group.items.map((item) => (
-            <NavRow key={item.url} {...item} />
+            <NavRow key={item.url} {...item} count={countFor(item.url)} />
           ))}
         </div>
       ))}
