@@ -58,8 +58,14 @@ export const updateTask = catchAsync(async (req: Request, res: Response) => {
 })
 
 export const moveTask = catchAsync(async (req: Request, res: Response) => {
-  const task = await taskService.move(String(req.params.id), req.body)
+  const task = await taskService.move(String(req.params.id), req.body, actorOf(req))
   ApiResponse.send(res, 200, 'Task moved', { task })
+})
+
+export const setTaskDone = catchAsync(async (req: Request, res: Response) => {
+  const done = req.body.done as boolean
+  const task = await taskService.setDone(String(req.params.id), done, actorOf(req))
+  ApiResponse.send(res, 200, done ? 'Task completed' : 'Task reopened', { task })
 })
 
 export const deleteTask = catchAsync(async (req: Request, res: Response) => {

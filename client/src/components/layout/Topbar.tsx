@@ -1,8 +1,9 @@
-import { Bell, Menu, Plus, Search } from 'lucide-react'
+import { Menu, Plus, Search } from 'lucide-react'
 
 import { Logo } from '@/components/common/Logo'
 import { ThemeToggle } from '@/components/common/ThemeToggle'
 import { NavigatorContent } from '@/components/layout/Sidebar'
+import { NotificationBell } from '@/features/notifications/components/NotificationBell'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useState } from 'react'
@@ -40,15 +41,7 @@ export function Topbar() {
       <div className="ml-auto flex items-center gap-1">
         <ThemeToggle className="rounded-full md:hidden" />
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative rounded-full"
-          aria-label="Notifications, 3 unread"
-        >
-          <Bell className="size-[18px]" />
-          <span className="bg-destructive ring-card absolute top-2 right-2 size-2 rounded-full ring-2" />
-        </Button>
+        <NotificationBell />
 
         <Button size="sm" className="ml-1 hidden rounded-full sm:inline-flex">
           <Plus /> New

@@ -9,6 +9,7 @@ import {
   type ProjectStatus,
   type Role,
 } from '@/types/enums'
+import { notificationService } from '@/services/notification.service'
 import { ApiError } from '@/utils/ApiError'
 import { idOf } from '@/utils/refs'
 import { serializeProject } from '@/utils/serialize-project'
@@ -287,6 +288,16 @@ async function addMember(id: string, userId: string, actor: Actor) {
     { $addToSet: { members: userId } },
     { returnDocument: 'after' }
   ).populate(POPULATE)
+
+  void notificationService.notify({
+    recipient: userId,
+    actor: actor.id,
+    type: 'PROJECT_MEMBER_ADDED',
+    message: `added you to ${project.name}`,
+    entity: 'PROJECT',
+    entityId: String(project._id),
+    url: `/projects/${String(project._id)}`,
+  })
 
   return serializeProject(updated!)
 }

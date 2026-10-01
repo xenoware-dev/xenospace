@@ -7,6 +7,7 @@ import {
   FileText,
   FolderKanban,
   FolderOpen,
+  Gauge,
   LayoutDashboard,
   ListTodo,
   MessageSquare,
@@ -15,6 +16,7 @@ import {
   Settings,
   Shield,
   SlidersHorizontal,
+  Sparkle,
   Sparkles,
   User,
   Users,
@@ -36,7 +38,7 @@ export interface NavGroup {
 /** Icons on the far-left rail: the few places people jump between all day. */
 export const railNavItems: NavItem[] = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
-  { title: 'Forum', url: '/forum', icon: MessagesSquare },
+  { title: 'My Work', url: '/my-work', icon: Sparkle },
   { title: 'Projects', url: '/projects', icon: FolderKanban },
   { title: 'Tasks', url: '/tasks', icon: ListTodo },
   { title: 'Messages', url: '/messages', icon: MessageSquare },
@@ -49,9 +51,10 @@ export const mainNavGroups: NavGroup[] = [
     label: 'Workspace',
     items: [
       { title: 'Dashboard', url: '/', icon: LayoutDashboard },
-      { title: 'Forum', url: '/forum', icon: MessagesSquare },
+      { title: 'My Work', url: '/my-work', icon: Sparkle },
       { title: 'Projects', url: '/projects', icon: FolderKanban },
       { title: 'Tasks', url: '/tasks', icon: ListTodo },
+      { title: 'Forum', url: '/forum', icon: MessagesSquare },
     ],
   },
   {
@@ -61,6 +64,10 @@ export const mainNavGroups: NavGroup[] = [
       { title: 'Notifications', url: '/notifications', icon: Bell },
       { title: 'Team', url: '/team', icon: Users },
     ],
+  },
+  {
+    label: 'Oversight',
+    items: [{ title: 'Team Workload', url: '/workload', icon: Gauge }],
   },
   {
     label: 'Library',
@@ -93,3 +100,14 @@ export const historyNavItems: NavItem[] = [
 ]
 
 export const ADMIN_ROLES: Role[] = ['SUPER_ADMIN', 'ADMIN']
+
+/**
+ * Who sees the Oversight group. Leads need the workload view to assign work,
+ * so it reaches further down than the admin area does.
+ */
+export const OVERSIGHT_ROLES: Role[] = ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'TEAM_LEAD']
+
+/** Nav groups only some roles should see at all. */
+export const ROLE_GATED_GROUPS: Record<string, Role[]> = {
+  Oversight: OVERSIGHT_ROLES,
+}
