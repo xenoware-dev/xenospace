@@ -11,39 +11,13 @@ import { Button } from '@/components/ui/button'
 import { softSurface } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BreakdownList, type BreakdownRow } from '@/features/admin/components/BreakdownList'
+import { SectionCard } from '@/features/admin/components/SectionCard'
 import { formatBytes, relativeDate } from '@/features/files/lib/file-meta'
 import { statusMeta } from '@/features/projects/lib/project-meta'
 import { formatRole, getInitials } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { adminApi } from '@/services/admin.service'
 import type { AdminOverview } from '@/types/admin'
-
-function SectionCard({
-  title,
-  description,
-  action,
-  children,
-  className,
-}: {
-  title: string
-  description?: string
-  action?: React.ReactNode
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <section className={cn(softSurface, 'flex flex-col gap-4 p-5', className)}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <h3 className="text-sm font-semibold">{title}</h3>
-          {description && <p className="text-muted-foreground text-xs">{description}</p>}
-        </div>
-        {action}
-      </div>
-      {children}
-    </section>
-  )
-}
 
 /** One of the three health figures beside the member count. */
 function HealthRow({

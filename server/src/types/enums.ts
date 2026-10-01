@@ -218,3 +218,48 @@ export const WORKLOAD_VIEWER_ROLES: Role[] = ['SUPER_ADMIN', 'ADMIN', 'MANAGER',
 
 /** A task is "due soon" once it falls inside this window. */
 export const DUE_SOON_HOURS = 48
+
+/**
+ * What the audit log records. Only the consequential, organisation-wide acts
+ * are here — the ones an administrator would be asked to account for later.
+ * Ordinary work (creating a task, uploading a file) is deliberately absent:
+ * the log is for governance, not for activity.
+ */
+export const AUDIT_ACTIONS = [
+  'USER_ROLE_CHANGED',
+  'USER_ACTIVATED',
+  'USER_DEACTIVATED',
+  'USER_REGISTERED',
+  'DEPARTMENT_CREATED',
+  'DEPARTMENT_UPDATED',
+  'DEPARTMENT_DELETED',
+] as const
+export type AuditAction = (typeof AUDIT_ACTIONS)[number]
+
+/** The kind of thing an entry is about, so the client knows where to link. */
+export const AUDIT_ENTITIES = ['USER', 'DEPARTMENT'] as const
+export type AuditEntity = (typeof AUDIT_ENTITIES)[number]
+
+/**
+ * How loudly an entry should read. Severity is a property of the action, not
+ * of the row, so it is resolved here rather than stored — otherwise a later
+ * change of judgement would only apply to entries written after it.
+ */
+export const AUDIT_SEVERITIES = ['INFO', 'NOTICE', 'ALERT'] as const
+export type AuditSeverity = (typeof AUDIT_SEVERITIES)[number]
+
+export const AUDIT_ACTION_SEVERITY: Record<AuditAction, AuditSeverity> = {
+  USER_ROLE_CHANGED: 'ALERT',
+  USER_DEACTIVATED: 'ALERT',
+  USER_ACTIVATED: 'NOTICE',
+  DEPARTMENT_DELETED: 'NOTICE',
+  DEPARTMENT_CREATED: 'INFO',
+  DEPARTMENT_UPDATED: 'INFO',
+  USER_REGISTERED: 'INFO',
+}
+
+/**
+ * The log is a record, so it is kept far longer than a notification — but not
+ * forever, because nothing here sweeps it by hand.
+ */
+export const AUDIT_RETENTION_DAYS = 365

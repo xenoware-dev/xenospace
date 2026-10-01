@@ -10,29 +10,24 @@ function actorOf(req: Request) {
 }
 
 export const listTasks = catchAsync(async (req: Request, res: Response) => {
-  // The validate middleware only writes its parsed output back onto req.body, so
-  // query values still arrive as strings here and are coerced by hand.
-  const query = req.query as Record<string, string | undefined>
+  // `validate` has already coerced and defaulted these against the schema, so
+  // they arrive in their final types rather than as raw strings.
+  const query = req.query as unknown as {
+    page: number
+    limit: number
+    search?: string
+    list?: string
+    priority?: TaskPriority
+    project?: string
+    assignee?: string
+    creator?: string
+    mine: boolean
+    due?: 'overdue' | 'today' | 'week' | 'none'
+    includeDone: boolean
+    sort: 'board' | 'recent' | 'created' | 'dueDate' | 'priority' | 'title'
+  }
 
-  const result = await taskService.list(
-    {
-      page: Number(query.page) || 1,
-      limit: Number(query.limit) || 25,
-      search: query.search,
-      list: query.list,
-      priority: query.priority as TaskPriority | undefined,
-      project: query.project,
-      assignee: query.assignee,
-      creator: query.creator,
-      mine: query.mine === 'true',
-      due: query.due as 'overdue' | 'today' | 'week' | 'none' | undefined,
-      includeDone: query.includeDone === 'true',
-      sort:
-        (query.sort as 'board' | 'recent' | 'created' | 'dueDate' | 'priority' | 'title') ||
-        'recent',
-    },
-    actorOf(req)
-  )
+  const result = await taskService.list({ ...query }, actorOf(req))
 
   ApiResponse.send(res, 200, 'Tasks', result)
 })

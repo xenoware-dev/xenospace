@@ -3,6 +3,8 @@ import { Router } from 'express'
 import * as adminController from '@/controllers/admin.controller'
 import { authorize, protect } from '@/middleware/auth.middleware'
 import { verifyOrigin } from '@/middleware/csrf.middleware'
+import { validate } from '@/middleware/validate.middleware'
+import { auditLogQuerySchema } from '@/validators/admin.validator'
 
 const router = Router()
 
@@ -13,5 +15,8 @@ router.use(verifyOrigin)
 router.use(authorize('ADMIN'))
 
 router.get('/overview', adminController.getOverview)
+router.get('/roles', adminController.getRoles)
+router.get('/system', adminController.getSystem)
+router.get('/audit-log', validate(auditLogQuerySchema), adminController.getAuditLog)
 
 export default router

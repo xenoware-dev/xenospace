@@ -2,8 +2,10 @@ import type { QueryFilter } from 'mongoose'
 
 import { Department } from '@/models/Department.model'
 import { User, type IUser } from '@/models/User.model'
+import { auditService } from '@/services/audit.service'
 import { ADMIN_ROLES, type Role } from '@/types/enums'
 import { ApiError } from '@/utils/ApiError'
+import { formatRole } from '@/utils/format-role'
 import { serializeUser } from '@/utils/serialize-user'
 
 interface ListUsersInput {
@@ -85,7 +87,7 @@ async function updateOwnProfile(
   return serializeUser(user)
 }
 
-async function updateUserRole(actingUser: IUser, targetId: string, role: Role) {
+async function updateUserRole(actingUser: IUser, targetId: string, role: Role, ip?: string) {
   if (String(actingUser._id) === targetId) {
     throw ApiError.forbidden('You cannot change your own role')
   }
@@ -103,14 +105,35 @@ async function updateUserRole(actingUser: IUser, targetId: string, role: Role) {
     throw ApiError.forbidden('Only a super admin can manage admin-level roles')
   }
 
+  const previousRole = target.role
   target.role = role
   await target.save()
   await target.populate('department', 'name')
 
+  // A no-op reassignment is not a change, so it leaves no entry.
+  if (previousRole !== role) {
+    await auditService.record({
+      actor: actingUser,
+      action: 'USER_ROLE_CHANGED',
+      entity: 'USER',
+      entityId: targetId,
+      entityLabel: target.name,
+      summary: `Changed ${target.name}'s role from ${formatRole(previousRole)} to ${formatRole(role)}`,
+      before: previousRole,
+      after: role,
+      ip,
+    })
+  }
+
   return serializeUser(target)
 }
 
-async function updateUserStatus(actingUser: IUser, targetId: string, isActive: boolean) {
+async function updateUserStatus(
+  actingUser: IUser,
+  targetId: string,
+  isActive: boolean,
+  ip?: string
+) {
   if (String(actingUser._id) === targetId) {
     throw ApiError.forbidden('You cannot change your own account status')
   }
@@ -124,6 +147,7 @@ async function updateUserStatus(actingUser: IUser, targetId: string, isActive: b
     throw ApiError.forbidden('Only a super admin can manage other admins')
   }
 
+  const wasActive = target.isActive
   target.isActive = isActive
   if (!isActive) {
     target.refreshTokenHash = null
@@ -131,6 +155,20 @@ async function updateUserStatus(actingUser: IUser, targetId: string, isActive: b
   }
   await target.save()
   await target.populate('department', 'name')
+
+  if (wasActive !== isActive) {
+    await auditService.record({
+      actor: actingUser,
+      action: isActive ? 'USER_ACTIVATED' : 'USER_DEACTIVATED',
+      entity: 'USER',
+      entityId: targetId,
+      entityLabel: target.name,
+      summary: isActive
+        ? `Reactivated ${target.name}'s account`
+        : `Deactivated ${target.name}'s account and signed them out`,
+      ip,
+    })
+  }
 
   return serializeUser(target)
 }

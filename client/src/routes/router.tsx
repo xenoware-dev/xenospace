@@ -25,7 +25,10 @@ import TeamMemberPage from '@/features/team/pages/TeamMemberPage'
 import MyWorkPage from '@/features/work/pages/MyWorkPage'
 import WorkloadPage from '@/features/work/pages/WorkloadPage'
 import AdminDashboardPage from '@/features/admin/pages/AdminDashboardPage'
+import AuditLogPage from '@/features/admin/pages/AuditLogPage'
 import OrganizationSettingsPage from '@/features/admin/pages/OrganizationSettingsPage'
+import RoleManagementPage from '@/features/admin/pages/RoleManagementPage'
+import SystemSettingsPage from '@/features/admin/pages/SystemSettingsPage'
 import UserManagementPage from '@/features/admin/pages/UserManagementPage'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import ComingSoonPage from '@/pages/ComingSoonPage'
@@ -84,10 +87,10 @@ export const router = createBrowserRouter([
             children: [
               { path: '/admin', element: <AdminDashboardPage /> },
               { path: '/admin/users', element: <UserManagementPage /> },
-              { path: '/admin/roles', element: <ComingSoonPage /> },
+              { path: '/admin/roles', element: <RoleManagementPage /> },
               { path: '/admin/organization', element: <OrganizationSettingsPage /> },
-              { path: '/admin/audit-logs', element: <ComingSoonPage /> },
-              { path: '/admin/system', element: <ComingSoonPage /> },
+              { path: '/admin/audit-logs', element: <AuditLogPage /> },
+              { path: '/admin/system', element: <SystemSettingsPage /> },
             ],
           },
         ],

@@ -6,26 +6,21 @@ import { ApiResponse } from '@/utils/ApiResponse'
 import { catchAsync } from '@/utils/catchAsync'
 
 export const listCalendarEvents = catchAsync(async (req: Request, res: Response) => {
-  // The validate middleware only writes its parsed output back onto req.body, so
-  // query values still arrive as strings here and are coerced by hand.
-  const query = req.query as Record<string, string | undefined>
-
-  const kinds = (query.kinds?.split(',').map((kind) => kind.trim()).filter(Boolean) ?? [
-    'TASK',
-    'PROJECT_START',
-    'PROJECT_DUE',
-  ]) as CalendarEventKind[]
+  // `validate` has already coerced these against the schema — the dates are
+  // Dates, the flags are booleans and `kinds` is the parsed list, so nothing
+  // here has to re-read them out of strings.
+  const query = req.query as unknown as {
+    from: Date
+    to: Date
+    project?: string
+    assignee?: string
+    mine: boolean
+    includeDone: boolean
+    kinds: CalendarEventKind[]
+  }
 
   const result = await calendarService.events(
-    {
-      from: new Date(String(query.from)),
-      to: new Date(String(query.to)),
-      project: query.project,
-      assignee: query.assignee,
-      mine: query.mine === 'true',
-      includeDone: query.includeDone === 'true',
-      kinds,
-    },
+    { ...query },
     { id: String(req.user!._id), role: req.user!.role as Role }
   )
 

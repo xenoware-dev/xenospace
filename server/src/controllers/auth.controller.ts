@@ -7,7 +7,7 @@ import { clearAuthCookies, setAuthCookies } from '@/utils/cookies'
 import { serializeUser } from '@/utils/serialize-user'
 
 export const register = catchAsync(async (req: Request, res: Response) => {
-  const user = await authService.register(req.body)
+  const user = await authService.register(req.body, req.ip)
   ApiResponse.send(
     res,
     201,

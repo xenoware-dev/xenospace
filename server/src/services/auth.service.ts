@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 
 import { env } from '@/config/env'
 import { User } from '@/models/User.model'
+import { auditService } from '@/services/audit.service'
 import { sendPasswordResetEmail, sendVerificationEmail } from '@/services/email.service'
 import { ApiError } from '@/utils/ApiError'
 import { serializeUser } from '@/utils/serialize-user'
@@ -9,12 +10,15 @@ import { generateOpaqueToken, hashToken, signAccessToken } from '@/utils/token'
 
 const REFRESH_COOKIE_MAX_AGE_MS = env.REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000
 
-async function register(input: {
-  name: string
-  username: string
-  email: string
-  password: string
-}) {
+async function register(
+  input: {
+    name: string
+    username: string
+    email: string
+    password: string
+  },
+  ip?: string
+) {
   const existing = await User.findOne({
     $or: [{ email: input.email.toLowerCase() }, { username: input.username.toLowerCase() }],
   })
@@ -42,6 +46,19 @@ async function register(input: {
 
   const verifyLink = `${env.CLIENT_URL}/verify-email?token=${verificationToken}`
   await sendVerificationEmail(user.email, user.name, verifyLink)
+
+  // Nobody acted on the new account but the person creating it, so they are the
+  // actor — this is how a headcount change gets into the log at all.
+  await auditService.record({
+    actor: user,
+    action: 'USER_REGISTERED',
+    entity: 'USER',
+    entityId: String(user._id),
+    entityLabel: user.name,
+    summary: `${user.name} created an account as @${user.username}`,
+    after: user.role,
+    ip,
+  })
 
   return serializeUser(user)
 }

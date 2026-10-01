@@ -111,3 +111,16 @@ export const OVERSIGHT_ROLES: Role[] = ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'TEAM
 export const ROLE_GATED_GROUPS: Record<string, Role[]> = {
   Oversight: OVERSIGHT_ROLES,
 }
+
+/**
+ * Nav urls that are a prefix of another nav url, such as `/admin` sitting above
+ * `/admin/users`. `NavLink` matches by prefix unless told otherwise, so without
+ * this both the parent and the child would be marked `aria-current="page"` —
+ * which reads as two active rows and parks the sliding pill on the parent,
+ * since the indicator takes the first match in the document.
+ */
+export const PARENT_NAV_URLS = new Set(
+  [...mainNavGroups.flatMap((group) => group.items), ...userNavItems, ...adminNavItems]
+    .map((item) => item.url)
+    .filter((url, _index, urls) => urls.some((other) => other !== url && other.startsWith(`${url}/`)))
+)

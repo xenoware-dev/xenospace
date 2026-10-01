@@ -29,11 +29,21 @@ export const updateOwnProfile = catchAsync(async (req: Request, res: Response) =
 })
 
 export const updateUserRole = catchAsync(async (req: Request, res: Response) => {
-  const user = await userService.updateUserRole(req.user!, String(req.params.id), req.body.role)
+  const user = await userService.updateUserRole(
+    req.user!,
+    String(req.params.id),
+    req.body.role,
+    req.ip
+  )
   ApiResponse.send(res, 200, 'Role updated', { user })
 })
 
 export const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const user = await userService.updateUserStatus(req.user!, String(req.params.id), req.body.isActive)
+  const user = await userService.updateUserStatus(
+    req.user!,
+    String(req.params.id),
+    req.body.isActive,
+    req.ip
+  )
   ApiResponse.send(res, 200, 'Status updated', { user })
 })

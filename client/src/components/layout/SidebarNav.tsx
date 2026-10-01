@@ -4,6 +4,7 @@ import {
   adminNavItems,
   historyNavItems,
   mainNavGroups,
+  PARENT_NAV_URLS,
   ROLE_GATED_GROUPS,
   type NavItem,
 } from '@/config/nav'
@@ -17,7 +18,9 @@ function NavRow({ title, url, icon: Icon, count }: NavItem & { count?: number })
   return (
     <NavLink
       to={url}
-      end={url === '/'}
+      // Exact matching for the root and for any row that sits above another,
+      // so a child route does not light its parent up as well.
+      end={url === '/' || PARENT_NAV_URLS.has(url)}
       className={({ isActive }) =>
         cn(
           'relative z-10 flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-[color,background-color] duration-[var(--motion-control)] ease-[var(--ease-glass)]',

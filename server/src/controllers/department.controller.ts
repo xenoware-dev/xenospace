@@ -10,16 +10,19 @@ export const listDepartments = catchAsync(async (_req: Request, res: Response) =
 })
 
 export const createDepartment = catchAsync(async (req: Request, res: Response) => {
-  const department = await departmentService.create(req.body)
+  const department = await departmentService.create(req.body, { user: req.user!, ip: req.ip })
   ApiResponse.send(res, 201, 'Department created', { department })
 })
 
 export const updateDepartment = catchAsync(async (req: Request, res: Response) => {
-  const department = await departmentService.update(String(req.params.id), req.body)
+  const department = await departmentService.update(String(req.params.id), req.body, {
+    user: req.user!,
+    ip: req.ip,
+  })
   ApiResponse.send(res, 200, 'Department updated', { department })
 })
 
 export const deleteDepartment = catchAsync(async (req: Request, res: Response) => {
-  await departmentService.remove(String(req.params.id))
+  await departmentService.remove(String(req.params.id), { user: req.user!, ip: req.ip })
   ApiResponse.send(res, 200, 'Department deleted')
 })

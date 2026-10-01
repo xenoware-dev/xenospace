@@ -10,26 +10,23 @@ function actorOf(req: Request) {
 }
 
 export const listProjects = catchAsync(async (req: Request, res: Response) => {
-  // The validate middleware only writes its parsed output back onto req.body, so
-  // query values still arrive as strings here and are coerced by hand.
-  const query = req.query as Record<string, string | undefined>
+  // `validate` has already coerced and defaulted these against the schema, so
+  // they arrive in their final types rather than as raw strings.
+  const query = req.query as unknown as {
+    page: number
+    limit: number
+    search?: string
+    status?: ProjectStatus
+    priority?: ProjectPriority
+    department?: string
+    lead?: string
+    member?: string
+    mine: boolean
+    sort: 'recent' | 'name' | 'dueDate' | 'progress'
+    includeArchived: boolean
+  }
 
-  const result = await projectService.list(
-    {
-      page: Number(query.page) || 1,
-      limit: Number(query.limit) || 12,
-      search: query.search,
-      status: query.status as ProjectStatus | undefined,
-      priority: query.priority as ProjectPriority | undefined,
-      department: query.department,
-      lead: query.lead,
-      member: query.member,
-      mine: query.mine === 'true',
-      sort: (query.sort as 'recent' | 'name' | 'dueDate' | 'progress') || 'recent',
-      includeArchived: query.includeArchived === 'true',
-    },
-    actorOf(req)
-  )
+  const result = await projectService.list({ ...query }, actorOf(req))
 
   ApiResponse.send(res, 200, 'Projects', result)
 })
