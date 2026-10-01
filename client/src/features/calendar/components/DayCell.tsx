@@ -61,18 +61,30 @@ export function DayCell({
       )}
     >
       <header className="flex items-center justify-between gap-1">
-        <span
+        {/*
+          The cell's own click is a mouse convenience and carries no role, so the
+          day number is the control that actually reaches the keyboard.
+        */}
+        <button
+          type="button"
+          onClick={(clickEvent) => {
+            clickEvent.stopPropagation()
+            onSelect(day)
+          }}
+          aria-label={`Show ${format(day, 'd MMMM yyyy')}`}
+          aria-pressed={isSelected}
           className={cn(
             'flex size-5 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums',
+            'focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none',
             today
               ? 'bg-data text-white'
               : isOutside
-                ? 'text-muted-foreground'
+                ? 'text-muted-foreground hover:text-foreground'
                 : 'text-foreground'
           )}
         >
           {format(day, 'd')}
-        </span>
+        </button>
 
         <button
           type="button"

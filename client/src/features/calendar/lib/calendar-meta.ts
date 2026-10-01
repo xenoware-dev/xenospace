@@ -153,6 +153,8 @@ export function shiftCursor(view: CalendarView, cursor: Date, direction: 1 | -1)
 export function groupByDay(events: CalendarEvent[]) {
   const grouped: Record<string, CalendarEvent[]> = {}
   events.forEach((event) => {
+    // An undated card has no cell to sit in; only the tray ever carries one.
+    if (!event.date) return
     const key = dayKey(parseISO(event.date))
     ;(grouped[key] ??= []).push(event)
   })
@@ -245,15 +247,6 @@ export function projectAsEvents(project: Project): CalendarEvent[] {
   ]
 }
 
-/** Which date field on a project a given milestone chip stands for. */
-export const projectDateField = (kind: CalendarEventKind) =>
-  kind === 'PROJECT_START' ? ('startDate' as const) : ('dueDate' as const)
-
-/** Where an event's chip links to, and which record a drop has to rewrite. */
-export function eventHref(event: CalendarEvent) {
-  return event.kind === 'TASK' ? '/tasks' : `/projects/${event.sourceId}`
-}
-
 /**
  * Local midnight for a grid cell. Sending the day's own midnight — rather than
  * the UTC midnight `new Date('yyyy-MM-dd')` parses to — keeps a card on the cell
@@ -261,8 +254,4 @@ export function eventHref(event: CalendarEvent) {
  */
 export function dayToIso(date: Date) {
   return startOfDay(date).toISOString()
-}
-
-export function eventTimeLabel(event: CalendarEvent) {
-  return event.date ? format(parseISO(event.date), 'd MMM') : null
 }

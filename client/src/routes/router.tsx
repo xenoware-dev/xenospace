@@ -9,6 +9,7 @@ import LoginPage from '@/features/auth/pages/LoginPage'
 import RegisterPage from '@/features/auth/pages/RegisterPage'
 import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage'
 import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage'
+import CalendarPage from '@/features/calendar/pages/CalendarPage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import ProfilePage from '@/features/profile/pages/ProfilePage'
 import ProjectDetailPage from '@/features/projects/pages/ProjectDetailPage'
@@ -58,7 +59,7 @@ export const router = createBrowserRouter([
           { path: '/messages', element: <ComingSoonPage /> },
           { path: '/knowledge-base', element: <ComingSoonPage /> },
           { path: '/files', element: <ComingSoonPage /> },
-          { path: '/calendar', element: <ComingSoonPage /> },
+          { path: '/calendar', element: <CalendarPage /> },
           { path: '/notifications', element: <ComingSoonPage /> },
           { path: '/profile', element: <ProfilePage /> },
           { path: '/settings', element: <SettingsPage /> },

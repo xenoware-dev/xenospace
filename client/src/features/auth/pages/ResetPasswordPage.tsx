@@ -1,30 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
-import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+  AuthHeading,
+  AuthSubmit,
+  authLink,
+  PasswordField,
+} from '@/features/auth/components/auth-ui'
 import { resetPasswordSchema, type ResetPasswordValues } from '@/features/auth/schemas'
 import { authApi } from '@/services/auth.service'
+
+const solidAction = 'h-11 w-full rounded-xl bg-white font-semibold text-neutral-950 hover:bg-white/90'
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -56,78 +48,84 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <Card variant="elevated">
-        <CardHeader>
-          <CardTitle className="text-xl">Invalid link</CardTitle>
-          <CardDescription>This password reset link is missing or malformed.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button asChild className="w-full">
-            <Link to="/forgot-password">Request a new link</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <div>
+        <AuthHeading
+          title="Invalid Link"
+          description="This password reset link is missing or malformed."
+        />
+        <Button asChild className={solidAction}>
+          <Link to="/forgot-password">Request a new link</Link>
+        </Button>
+      </div>
     )
   }
 
   if (done) {
     return (
-      <Card variant="elevated">
-        <CardHeader>
-          <CardTitle className="text-xl">Password updated</CardTitle>
-          <CardDescription>You can now sign in with your new password.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button className="w-full" onClick={() => navigate('/login', { replace: true })}>
-            Continue to sign in
-          </Button>
-        </CardContent>
-      </Card>
+      <div>
+        <AuthHeading
+          title="Password Updated"
+          description="You can now sign in with your new password."
+        />
+        <Button className={solidAction} onClick={() => navigate('/login', { replace: true })}>
+          Continue to sign in
+        </Button>
+      </div>
     )
   }
 
   return (
-    <Card variant="elevated">
-      <CardHeader>
-        <CardTitle className="text-xl">Reset your password</CardTitle>
-        <CardDescription>Choose a new password for your account</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New password</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="new-password" {...field} />
-                  </FormControl>
+    <div>
+      <AuthHeading
+        title="Reset Password"
+        description="Choose a new password for your account."
+      />
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">New Password</FormLabel>
+                <PasswordField
+                  placeholder="Enter your new password"
+                  autoComplete="new-password"
+                  {...field}
+                />
+                {form.formState.errors.password ? (
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm new password</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="new-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="mt-2 w-full" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting && <Loader2 className="animate-spin" />}
-              Reset password
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                ) : (
+                  <p className="text-xs text-white/40">Must be at least 8 characters.</p>
+                )}
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Confirm New Password</FormLabel>
+                <PasswordField
+                  placeholder="Re-enter your new password"
+                  autoComplete="new-password"
+                  {...field}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <AuthSubmit pending={form.formState.isSubmitting}>Reset Password</AuthSubmit>
+        </form>
+      </Form>
+
+      <p className="mt-7 text-center text-sm text-white/50">
+        <Link to="/login" className={authLink}>
+          Back to sign in
+        </Link>
+      </p>
+    </div>
   )
 }

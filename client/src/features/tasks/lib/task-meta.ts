@@ -24,6 +24,7 @@ export const dueFilterLabels = {
   overdue: 'Overdue',
   today: 'Due today',
   week: 'Due this week',
+  none: 'No due date',
 } as const
 
 export function formatTaskDate(value: string | null) {

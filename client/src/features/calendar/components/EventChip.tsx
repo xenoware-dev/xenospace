@@ -14,37 +14,25 @@ interface ChipProps {
   onOpen?: (event: CalendarEvent) => void
 }
 
-/** The chip as it looks in place, and as it looks riding the drag overlay. */
+/**
+ * The chip's looks, with no behaviour of its own: it is rendered both inside a
+ * draggable — which supplies the button role and the tab stop — and inside the
+ * drag overlay, where it is decoration.
+ */
 export function ChipFace({
   event,
   compact,
   isDragging,
-  onOpen,
-}: ChipProps & { isDragging?: boolean }) {
+}: Omit<ChipProps, 'onOpen'> & { isDragging?: boolean }) {
   const meta = eventKindMeta[event.kind]
   const Icon = meta.icon
 
   return (
     <div
-      role={onOpen ? 'button' : undefined}
-      tabIndex={onOpen ? 0 : undefined}
-      onClick={onOpen ? () => onOpen(event) : undefined}
-      onKeyDown={
-        onOpen
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                onOpen(event)
-              }
-            }
-          : undefined
-      }
       className={cn(
         'group/chip relative flex w-full items-center gap-1.5 overflow-hidden rounded-lg py-1 pr-1.5 pl-2.5 text-left',
         'transition-shadow duration-[var(--motion-control)] ease-[var(--ease-glass)]',
-        'focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none',
         meta.chip,
-        onOpen && 'cursor-grab active:cursor-grabbing',
         isDragging ? 'shadow-[var(--glass-shadow)]' : 'hover:shadow-[var(--glass-shadow-sm)]',
         event.isDone && 'opacity-55'
       )}
@@ -93,6 +81,9 @@ export function ChipFace({
 /**
  * Chips are dragged onto another day to reschedule. Completed work is left
  * fixed — moving a date that has already been met is never what was meant.
+ *
+ * The pointer sensor's distance threshold means a press that does not travel
+ * stays a click, so opening and dragging can share the one element.
  */
 export function EventChip({ event, compact, onOpen }: ChipProps) {
   const draggable = !event.isDone
@@ -105,12 +96,18 @@ export function EventChip({ event, compact, onOpen }: ChipProps) {
   return (
     <div
       ref={setNodeRef}
+      onClick={onOpen ? () => onOpen(event) : undefined}
       // `touch-none` lets a touch drag beat the cell's own scrolling.
-      className={cn('touch-none', isDragging && 'opacity-40')}
+      className={cn(
+        'touch-none rounded-lg',
+        'focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-none',
+        draggable && 'cursor-grab active:cursor-grabbing',
+        isDragging && 'opacity-40'
+      )}
       {...attributes}
       {...listeners}
     >
-      <ChipFace event={event} compact={compact} onOpen={onOpen} />
+      <ChipFace event={event} compact={compact} isDragging={isDragging} />
     </div>
   )
 }

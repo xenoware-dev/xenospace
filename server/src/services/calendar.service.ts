@@ -119,6 +119,8 @@ async function projectEvents(input: RangeInput, actor: Actor): Promise<CalendarE
   const wantsStart = input.kinds.includes('PROJECT_START')
   const wantsDue = input.kinds.includes('PROJECT_DUE')
   if (!wantsStart && !wantsDue) return []
+  // "No project" is a task-only notion, so that filter hides this layer entirely.
+  if (input.project === 'none') return []
 
   const inRange = { $gte: input.from, $lt: input.to }
   // Only the milestones actually being drawn should pull a project in.
@@ -133,9 +135,7 @@ async function projectEvents(input: RangeInput, actor: Actor): Promise<CalendarE
   if (input.mine) and.push({ $or: [{ lead: actor.id }, { members: actor.id }] })
 
   const filter: QueryFilter<IProject> = { $and: and }
-  if (input.project && input.project !== 'none') filter._id = input.project
-  // "No project" is a task-only notion, so that filter hides this layer entirely.
-  if (input.project === 'none') return []
+  if (input.project) filter._id = input.project
   if (!input.includeDone) filter.status = { $ne: 'ARCHIVED' }
 
   const projects = await Project.find(filter)

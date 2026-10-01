@@ -9,7 +9,7 @@ export type TaskPriority = ProjectPriority
 export const TASK_SORTS = ['board', 'recent', 'created', 'dueDate', 'priority', 'title'] as const
 export type TaskSort = (typeof TASK_SORTS)[number]
 
-export type DueFilter = 'overdue' | 'today' | 'week'
+export type DueFilter = 'overdue' | 'today' | 'week' | 'none'
 
 export interface TaskUserRef {
   id: string
