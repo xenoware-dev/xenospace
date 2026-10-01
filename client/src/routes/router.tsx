@@ -11,6 +11,7 @@ import ResetPasswordPage from '@/features/auth/pages/ResetPasswordPage'
 import VerifyEmailPage from '@/features/auth/pages/VerifyEmailPage'
 import CalendarPage from '@/features/calendar/pages/CalendarPage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
+import FilesPage from '@/features/files/pages/FilesPage'
 import ProfilePage from '@/features/profile/pages/ProfilePage'
 import ProjectDetailPage from '@/features/projects/pages/ProjectDetailPage'
 import ProjectsPage from '@/features/projects/pages/ProjectsPage'
@@ -58,7 +59,7 @@ export const router = createBrowserRouter([
           { path: '/team/:id', element: <TeamMemberPage /> },
           { path: '/messages', element: <ComingSoonPage /> },
           { path: '/knowledge-base', element: <ComingSoonPage /> },
-          { path: '/files', element: <ComingSoonPage /> },
+          { path: '/files', element: <FilesPage /> },
           { path: '/calendar', element: <CalendarPage /> },
           { path: '/notifications', element: <ComingSoonPage /> },
           { path: '/profile', element: <ProfilePage /> },
