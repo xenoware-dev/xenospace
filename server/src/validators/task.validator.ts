@@ -61,3 +61,8 @@ export const moveTaskSchema = z.object({
     index: z.coerce.number().int().min(0),
   }),
 })
+
+export const setTaskDoneSchema = z.object({
+  params: z.object({ id: z.string().trim().regex(/^[0-9a-fA-F]{24}$/, 'Invalid id') }),
+  body: z.object({ done: z.boolean() }),
+})

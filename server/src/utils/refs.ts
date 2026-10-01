@@ -1,5 +1,6 @@
 import type { HydratedDocument } from 'mongoose'
 
+import type { IArticleCategory } from '@/models/ArticleCategory.model'
 import type { IDepartment } from '@/models/Department.model'
 import type { IProject } from '@/models/Project.model'
 import type { ITaskList } from '@/models/TaskList.model'
@@ -17,6 +18,13 @@ export interface UserRef {
 export interface DepartmentRef {
   id: string
   name: string
+}
+
+export interface ArticleCategoryRef {
+  id: string
+  name: string
+  slug: string
+  icon: string
 }
 
 export interface ProjectRef {
@@ -69,6 +77,11 @@ export function toDepartmentRef(value: unknown): DepartmentRef | null {
 export function toProjectRef(value: unknown): ProjectRef | null {
   if (!isPopulated<IProject>(value, 'key')) return null
   return { id: String(value._id), name: value.name, key: value.key }
+}
+
+export function toArticleCategoryRef(value: unknown): ArticleCategoryRef | null {
+  if (!isPopulated<IArticleCategory>(value, 'slug')) return null
+  return { id: String(value._id), name: value.name, slug: value.slug, icon: value.icon }
 }
 
 export function toTaskListRef(value: unknown): TaskListRef | null {

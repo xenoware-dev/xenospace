@@ -1,6 +1,12 @@
 import { NavLink } from 'react-router-dom'
 
-import { adminNavItems, historyNavItems, mainNavGroups, type NavItem } from '@/config/nav'
+import {
+  adminNavItems,
+  historyNavItems,
+  mainNavGroups,
+  ROLE_GATED_GROUPS,
+  type NavItem,
+} from '@/config/nav'
 import { useActiveIndicator } from '@/hooks/use-active-indicator'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth.store'
@@ -70,14 +76,21 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         }}
       />
 
-      {mainNavGroups.map((group) => (
+      {mainNavGroups.map((group) => {
+        // A group nobody in this role can use is left out entirely rather
+        // than shown as rows that refuse on click.
+        const allowed = ROLE_GATED_GROUPS[group.label]
+        if (allowed && (!role || !allowed.includes(role))) return null
+
+        return (
         <div key={group.label} className="flex flex-col gap-0.5">
           <SectionLabel>{group.label}</SectionLabel>
           {group.items.map((item) => (
             <NavRow key={item.url} {...item} count={countFor(item.url)} />
           ))}
         </div>
-      ))}
+        )
+      })}
 
       <div className="flex flex-col gap-0.5">
         <SectionLabel>History</SectionLabel>

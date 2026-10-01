@@ -5,11 +5,22 @@ import { Server, type Socket } from 'socket.io'
 import { env } from '@/config/env'
 import { verifyAccessToken } from '@/utils/token'
 
-// Foundational Socket.IO bootstrap: authenticates the connection using the
-// same access token cookie as the REST API. Feature events (messages,
-// presence, live task updates) are added in later phases.
+/**
+ * The live connection. Held at module scope so any service can push to a
+ * person without threading an `io` instance through every call site, and
+ * nullable so the API still works when sockets are not up — a notification
+ * that cannot be delivered live is still written to the database, and the
+ * client picks it up on its next poll or page load.
+ */
+let io: Server | null = null
+
+/** One room per person, so a push reaches every tab they have open. */
+export function roomForUser(userId: string) {
+  return `user:${userId}`
+}
+
 export function initSocket(httpServer: HttpServer) {
-  const io = new Server(httpServer, {
+  io = new Server(httpServer, {
     cors: {
       origin: env.CLIENT_URL,
       credentials: true,
@@ -35,12 +46,27 @@ export function initSocket(httpServer: HttpServer) {
   })
 
   io.on('connection', (socket) => {
-    console.log(`Socket connected: user=${socket.data.userId} socket=${socket.id}`)
+    const userId = String(socket.data.userId)
+    void socket.join(roomForUser(userId))
 
     socket.on('disconnect', () => {
-      console.log(`Socket disconnected: user=${socket.data.userId} socket=${socket.id}`)
+      // Socket.IO leaves the room itself; nothing to unwind here.
     })
   })
 
+  return io
+}
+
+/**
+ * Pushes an event to one person's open tabs. Deliberately forgiving: a push
+ * is a nice-to-have on top of a row that is already saved, so a socket that
+ * is down must never fail the request that triggered it.
+ */
+export function emitToUser(userId: string, event: string, payload: unknown) {
+  if (!io) return
+  io.to(roomForUser(userId)).emit(event, payload)
+}
+
+export function getIO() {
   return io
 }

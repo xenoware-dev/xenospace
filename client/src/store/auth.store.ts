@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+import { disconnectSocket } from '@/lib/socket'
 import { authApi } from '@/services/auth.service'
 import type { User } from '@/types/auth'
 
@@ -18,7 +19,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) => set({ user, status: 'authenticated' }),
 
-  clearUser: () => set({ user: null, status: 'unauthenticated' }),
+  clearUser: () => {
+    // The socket is authenticated from the access-token cookie, so it has to
+    // go down with the session — otherwise the next person to sign in on this
+    // machine inherits a live connection opened as someone else.
+    disconnectSocket()
+    set({ user: null, status: 'unauthenticated' })
+  },
 
   fetchCurrentUser: async () => {
     set({ status: 'loading' })
@@ -26,6 +33,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { data } = await authApi.me()
       set({ user: data.user, status: 'authenticated' })
     } catch {
+      disconnectSocket()
       set({ user: null, status: 'unauthenticated' })
     }
   },
@@ -34,6 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await authApi.logout()
     } finally {
+      disconnectSocket()
       set({ user: null, status: 'unauthenticated' })
     }
   },

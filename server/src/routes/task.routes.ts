@@ -7,6 +7,7 @@ import {
   createTaskSchema,
   listTasksQuerySchema,
   moveTaskSchema,
+  setTaskDoneSchema,
   taskIdSchema,
   updateTaskSchema,
 } from '@/validators/task.validator'
@@ -25,6 +26,7 @@ router.post('/', validate(createTaskSchema), taskController.createTask)
 router.patch('/:id', validate(updateTaskSchema), taskController.updateTask)
 // Rearranging the shared board is open to everyone on it, unlike editing a card.
 router.patch('/:id/move', validate(moveTaskSchema), taskController.moveTask)
+router.patch('/:id/done', validate(setTaskDoneSchema), taskController.setTaskDone)
 router.delete('/:id', validate(taskIdSchema), taskController.deleteTask)
 
 export default router

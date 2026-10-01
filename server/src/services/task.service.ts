@@ -10,6 +10,7 @@ import {
   type Role,
   type TaskPriority,
 } from '@/types/enums'
+import { notificationService } from '@/services/notification.service'
 import { ApiError } from '@/utils/ApiError'
 import { idOf } from '@/utils/refs'
 import { serializeTask } from '@/utils/serialize-task'
@@ -237,6 +238,49 @@ async function getById(id: string) {
   return serializeTask(task)
 }
 
+/** How a task reads in a notification: "XENO-12 · Ship the landing page". */
+function taskLabel(task: ITask) {
+  return task.reference ? `${task.reference} · ${task.title}` : task.title
+}
+
+/**
+ * Tells someone that work has landed on them, or come off them. Deliberately
+ * fire-and-forget: the notification service already swallows its own errors,
+ * and assigning a task must succeed whether or not the nudge gets through.
+ */
+async function notifyAssignment(
+  task: ITask,
+  actor: Actor,
+  { assigned, unassigned }: { assigned?: string | null; unassigned?: string | null }
+) {
+  const label = taskLabel(task)
+  const url = `/tasks?task=${String(task._id)}`
+
+  if (assigned) {
+    void notificationService.notify({
+      recipient: assigned,
+      actor: actor.id,
+      type: 'TASK_ASSIGNED',
+      message: `assigned you ${label}`,
+      entity: 'TASK',
+      entityId: String(task._id),
+      url,
+    })
+  }
+
+  if (unassigned) {
+    void notificationService.notify({
+      recipient: unassigned,
+      actor: actor.id,
+      type: 'TASK_UNASSIGNED',
+      message: `took ${label} off you`,
+      entity: 'TASK',
+      entityId: String(task._id),
+      url,
+    })
+  }
+}
+
 async function create(input: TaskInput & { title: string }, actor: Actor) {
   await assertReferencesExist(input)
 
@@ -257,6 +301,10 @@ async function create(input: TaskInput & { title: string }, actor: Actor) {
     reference: input.project ? await mintReference(input.project) : null,
     createdBy: actor.id,
   })
+
+  if (input.assignee) {
+    await notifyAssignment(created, actor, { assigned: input.assignee })
+  }
 
   await created.populate(POPULATE)
   return serializeTask(created)
@@ -296,6 +344,30 @@ async function update(id: string, input: TaskInput, actor: Actor) {
     runValidators: true,
   }).populate(POPULATE)
 
+  const previousAssignee = idOf(task.assignee) || null
+  const nextAssignee = input.assignee !== undefined ? (input.assignee ?? null) : previousAssignee
+
+  if (nextAssignee !== previousAssignee) {
+    await notifyAssignment(updated!, actor, {
+      assigned: nextAssignee,
+      unassigned: previousAssignee,
+    })
+  }
+
+  // Whoever raised the work wants to know it is finished — but only on the
+  // transition, so dragging a done card around the column stays quiet.
+  if (updated!.isDone && !task.isDone) {
+    void notificationService.notify({
+      recipient: idOf(task.createdBy),
+      actor: actor.id,
+      type: 'TASK_COMPLETED',
+      message: `completed ${taskLabel(updated!)}`,
+      entity: 'TASK',
+      entityId: String(task._id),
+      url: `/tasks?task=${String(task._id)}`,
+    })
+  }
+
   return serializeTask(updated!)
 }
 
@@ -304,7 +376,7 @@ async function update(id: string, input: TaskInput, actor: Actor) {
  * the order the board shows is the order that is stored. Anyone on the board may
  * do this — it rearranges the board rather than editing the card's content.
  */
-async function move(id: string, input: { list: string; index: number }) {
+async function move(id: string, input: { list: string; index: number }, actor: Actor) {
   const task = await Task.findById(id)
   if (!task) {
     throw ApiError.notFound('Task not found')
@@ -330,6 +402,20 @@ async function move(id: string, input: { list: string; index: number }) {
     completedAt: targetList.isDone ? (task.completedAt ?? new Date()) : null,
   })
 
+  // Dragging a card into the done column is how most work is actually
+  // finished, so the same notification as the edit form fires here.
+  if (targetList.isDone && !task.isDone) {
+    void notificationService.notify({
+      recipient: idOf(task.createdBy),
+      actor: actor.id,
+      type: 'TASK_COMPLETED',
+      message: `completed ${taskLabel(task)}`,
+      entity: 'TASK',
+      entityId: String(task._id),
+      url: `/tasks?task=${String(task._id)}`,
+    })
+  }
+
   const moved = await Task.findById(id).populate(POPULATE)
   return serializeTask(moved!)
 }
@@ -346,4 +432,36 @@ async function remove(id: string, actor: Actor) {
   await renumber(listId, await cardIdsIn(listId))
 }
 
-export const taskService = { list, summary, getById, create, update, move, remove }
+/**
+ * Ticks a card off, or puts it back. Completion lives in the board column
+ * rather than on the card, so this finds the right column and moves it —
+ * which is what lets a checkbox outside the board (My Work, a digest) mean
+ * exactly the same thing as dragging the card across.
+ */
+async function setDone(id: string, done: boolean, actor: Actor) {
+  const task = await Task.findById(id)
+  if (!task) {
+    throw ApiError.notFound('Task not found')
+  }
+  await assertCanManage(task, actor)
+
+  if (task.isDone === done) {
+    await task.populate(POPULATE)
+    return serializeTask(task)
+  }
+
+  const target = await TaskList.findOne({ isDone: done }).sort({ position: done ? -1 : 1 })
+  if (!target) {
+    throw ApiError.badRequest(
+      done
+        ? 'This board has no done column to move the task into'
+        : 'This board has no open column to move the task back to'
+    )
+  }
+
+  // Reusing move keeps one implementation of renumbering, the completed-at
+  // stamp and the completion notification.
+  return move(id, { list: String(target._id), index: 0 }, actor)
+}
+
+export const taskService = { list, summary, getById, create, update, move, setDone, remove }

@@ -23,6 +23,12 @@ export const taskApi = {
   create: (payload: TaskPayload) =>
     api.post<ApiEnvelope<{ task: Task }>>('/tasks', payload).then((r) => r.data),
 
+  /** Completion lives in the board column, so the API moves the card for us. */
+  setDone: (id: string, done: boolean) =>
+    api
+      .patch<ApiEnvelope<{ task: Task }>>(`/tasks/${id}/done`, { done })
+      .then((r) => r.data),
+
   update: (id: string, payload: Partial<TaskPayload>) =>
     api.patch<ApiEnvelope<{ task: Task }>>(`/tasks/${id}`, payload).then((r) => r.data),
 
