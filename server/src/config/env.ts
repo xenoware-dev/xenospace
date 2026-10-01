@@ -23,6 +23,13 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().default('Xenospace <no-reply@xenoware.dev>'),
+
+  /** Where uploaded file bytes are written. Relative paths resolve from server/. */
+  UPLOAD_DIR: z.string().default('uploads'),
+  /** Per-file ceiling enforced by multer before anything touches the disk. */
+  MAX_UPLOAD_MB: z.coerce.number().positive().default(25),
+  /** How many files one multipart request may carry. */
+  MAX_UPLOAD_FILES: z.coerce.number().int().positive().max(50).default(10),
 })
 
 const parsed = envSchema.safeParse(process.env)
