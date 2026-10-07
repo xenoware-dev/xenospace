@@ -23,7 +23,12 @@ export function createApp(): Express {
    * default setting a client could spoof `X-Forwarded-For` and evade both.
    * `TRUST_PROXY` must name the real hop count or proxy for the deployment.
    */
-  app.set('trust proxy', env.TRUST_PROXY === 'true' ? true : env.TRUST_PROXY);
+  // A hop count must reach Express as a number: the string "2" is parsed as an
+  // IP address list and rejected.
+  app.set(
+    'trust proxy',
+    env.TRUST_PROXY === 'true' ? true : /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY,
+  );
   // The framework version is not information a client needs.
   app.disable('x-powered-by');
   // Strict routing off, but query parsing pinned: the extended parser's

@@ -48,7 +48,12 @@ export function SocketProvider({ children }: { children: ReactNode }): ReactNode
   useEffect(() => {
     if (status !== 'authenticated' || !user) return;
 
-    const socket: AppSocket = io({
+    // In production the site is on Vercel and the API on Railway. Vercel's
+    // rewrites cannot carry a WebSocket, so the socket connects to the API
+    // host directly; locally it goes through Vite's proxy on the same origin.
+    // Auth is a token in the handshake, not a cookie, so cross-origin is fine.
+    const realtimeUrl = import.meta.env.VITE_REALTIME_URL as string | undefined;
+    const options = {
       path: '/realtime',
       // The token is read lazily at connect time, so a reconnect after a
       // refresh presents the new token rather than the expired one.
@@ -57,7 +62,8 @@ export function SocketProvider({ children }: { children: ReactNode }): ReactNode
       reconnectionDelay: 500,
       reconnectionDelayMax: 5000,
       timeout: 10_000,
-    });
+    } satisfies Parameters<typeof io>[1];
+    const socket: AppSocket = realtimeUrl ? io(realtimeUrl, options) : io(options);
     socketRef.current = socket;
 
     socket.on('connect', () => setConnected(true));
