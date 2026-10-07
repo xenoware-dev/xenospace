@@ -13,3 +13,6 @@ coverage/
 *.tsbuildinfo
 .uploads/
 .pgdata.lock
+
+# Deployment variable files hold production secrets; never commit them.
+*.env.local

@@ -5,7 +5,7 @@
   "buildCommand": "npm run build --workspace=@xenospace/web",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://RAILWAY_API_HOST/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://space-api.xenoware.in/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
