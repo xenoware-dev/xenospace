@@ -1,0 +1,327 @@
+/**
+ * XenoSpace design tokens — "liquid glass on black".
+ *
+ * The page is black and every surface above it is glass: white at a low alpha
+ * rather than grey paint, so stacked layers (a tile on a panel, a raised pill
+ * on a track) genuinely brighten, the way light passes through frosted glass.
+ * The interface is greyscale; colour is reserved for data and for state.
+ *
+ * Token *names* are the component API and did not change when this look was
+ * adopted; only the values moved. That is what reskinned every page at once.
+ */
+
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* --- Surfaces --------------------------------------------------------- */
+  --surface-page: #000000;
+  --surface-1: rgb(255 255 255 / 0.05);   /* tiles and cards on a panel */
+  --surface-2: rgb(255 255 255 / 0.08);   /* hovered tile, menus */
+  --surface-3: rgb(255 255 255 / 0.11);   /* raised: active pill, chips */
+  --surface-inset: rgb(255 255 255 / 0.04); /* recessed: inputs, tracks */
+  --surface-overlay: rgb(0 0 0 / 0.6);
+  /* Opaque surface for what the browser draws itself (native option lists,
+     autofill): it cannot render a translucent background and falls back to
+     white. */
+  --surface-solid: #161616;
+
+  --wash-hover: rgb(255 255 255 / 0.05);
+  --wash-active: rgb(255 255 255 / 0.09);
+  --wash-selected: rgb(255 255 255 / 0.10);
+
+  /* --- Ink -------------------------------------------------------------- */
+  --ink-primary: #f5f5f5;
+  --ink-secondary: #c7c7c7;
+  --ink-muted: #9b9b9b;
+  --ink-faint: #6b6b6b;
+  --ink-inverse: #0a0a0a;
+
+  /* --- Lines ------------------------------------------------------------ */
+  --line-subtle: rgb(255 255 255 / 0.07);
+  --line: rgb(255 255 255 / 0.10);
+  --line-strong: rgb(255 255 255 / 0.16);
+  --line-focus: rgb(255 255 255 / 0.55);
+
+  /* --- Accent ----------------------------------------------------------
+     The primary action is near-white on black. Interactive emphasis is
+     carried by contrast, not hue. */
+  --accent: #f2f2f2;
+  --accent-hover: #ffffff;
+  --accent-active: #d9d9d9;
+  --accent-ink: #0a0a0a;
+  --accent-wash: rgb(255 255 255 / 0.08);
+  --accent-wash-strong: rgb(255 255 255 / 0.14);
+  --accent-ring: rgb(255 255 255 / 0.28);
+
+  /* The one hue in the chrome: a calm blue for data and "today". */
+  --data: oklch(0.72 0.14 258);
+  --data-track: rgb(255 255 255 / 0.09);
+
+  /* --- Glass ------------------------------------------------------------ */
+  --glass-bg: rgb(255 255 255 / 0.06);
+  --glass-tile: rgb(255 255 255 / 0.05);
+  --glass-control: rgb(255 255 255 / 0.04);
+  --glass-raised-bg: rgb(255 255 255 / 0.15);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-border-soft: rgb(255 255 255 / 0.07);
+  --glass-highlight: rgb(255 255 255 / 0.16);
+  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0.015) 38%, transparent 72%);
+  --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.6), 0 24px 64px rgb(0 0 0 / 0.7);
+  --glass-shadow-sm: 0 1px 3px rgb(0 0 0 / 0.55);
+  --glass-control-shadow: inset 0 1px 2px rgb(0 0 0 / 0.25);
+  --glass-raised-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 4px 12px rgb(0 0 0 / 0.25);
+  --glass-rail-bg: rgb(255 255 255 / 0.05);
+  --glass-rail-border: rgb(255 255 255 / 0.10);
+  --glass-rail-highlight: rgb(255 255 255 / 0.14);
+  --glass-blur: 32px;
+  --glass-saturate: 140%;
+  /* Blooms just above black, so the blur has something to bend. */
+  --ambient:
+    radial-gradient(60% 50% at 10% 0%, rgb(51 51 51 / 0.30), transparent 70%),
+    radial-gradient(52% 46% at 96% 6%, rgb(43 43 43 / 0.26), transparent 68%),
+    radial-gradient(56% 50% at 84% 100%, rgb(41 41 41 / 0.22), transparent 70%);
+
+  /* --- Status (fixed roles, never reused as a series colour) -------------
+     Always paired with an icon and a label, so state never rests on hue. */
+  --status-good: #0ca30c;
+  --status-good-ink: #4ade80;
+  --status-good-wash: rgba(12, 163, 12, 0.14);
+  --status-warning: #fab219;
+  --status-warning-ink: #fbbf24;
+  --status-warning-wash: rgba(250, 178, 25, 0.14);
+  --status-serious: #ec835a;
+  --status-serious-ink: #fb923c;
+  --status-serious-wash: rgba(236, 131, 90, 0.14);
+  --status-critical: #d03b3b;
+  --status-critical-ink: #f87171;
+  --status-critical-wash: rgba(208, 59, 59, 0.16);
+  --status-neutral: #71717f;
+  --status-neutral-wash: rgba(113, 113, 127, 0.14);
+  --status-info: #3987e5;
+  --status-info-ink: #60a5fa;
+  --status-info-wash: rgba(57, 135, 229, 0.14);
+
+  /* --- Chart palette ----------------------------------------------------
+     The validated categorical order, stepped for the dark surface. Assigned
+     in fixed slot order and never cycled; a ninth series folds into "Other".
+     Validated against --surface-1 (#121215): worst adjacent CVD ΔE 8.4,
+     normal-vision ΔE 19.3, all slots ≥ 3:1 contrast. */
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+
+  /* Chart chrome. Grid and axes stay recessive so the marks lead. */
+  --chart-grid: #2c2c2a;
+  --chart-axis: #383835;
+  --chart-label: #898781;
+
+  /* Sequential ramp (single hue, light → dark) for magnitude encodings such
+     as the contribution heatmap. */
+  --seq-100: #104281;
+  --seq-200: #184f95;
+  --seq-300: #1c5cab;
+  --seq-400: #256abf;
+  --seq-500: #2a78d6;
+  --seq-600: #3987e5;
+
+
+  /* --- Elevation -------------------------------------------------------- */
+  --shadow-sm: var(--glass-shadow-sm);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.35), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-lg: var(--glass-shadow);
+  --shadow-focus: 0 0 0 3px var(--accent-ring);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --surface-page: #ededed;
+  --surface-1: rgb(255 255 255 / 0.42);
+  --surface-2: rgb(255 255 255 / 0.62);
+  --surface-3: rgb(255 255 255 / 0.85);
+  --surface-inset: rgb(255 255 255 / 0.30);
+  --surface-overlay: rgb(20 20 20 / 0.28);
+  --surface-solid: #ffffff;
+
+  --wash-hover: rgb(0 0 0 / 0.04);
+  --wash-active: rgb(0 0 0 / 0.07);
+  --wash-selected: rgb(255 255 255 / 0.88);
+
+  --ink-primary: #141414;
+  --ink-secondary: #3d3d3d;
+  --ink-muted: #6f6f6f;
+  --ink-faint: #9a9a9a;
+  --ink-inverse: #ffffff;
+
+  --line-subtle: rgb(0 0 0 / 0.06);
+  --line: rgb(0 0 0 / 0.10);
+  --line-strong: rgb(0 0 0 / 0.18);
+  --line-focus: rgb(0 0 0 / 0.5);
+
+  --accent: #1c1c1c;
+  --accent-hover: #000000;
+  --accent-active: #333333;
+  --accent-ink: #fafafa;
+  --accent-wash: rgb(0 0 0 / 0.05);
+  --accent-wash-strong: rgb(0 0 0 / 0.09);
+  --accent-ring: rgb(0 0 0 / 0.22);
+
+  --data: oklch(0.55 0.16 258);
+  --data-track: oklch(0.92 0.03 258);
+
+  --glass-bg: rgb(255 255 255 / 0.46);
+  --glass-tile: rgb(255 255 255 / 0.38);
+  --glass-control: rgb(255 255 255 / 0.30);
+  --glass-raised-bg: rgb(255 255 255 / 0.88);
+  --glass-border: rgb(255 255 255 / 0.70);
+  --glass-border-soft: rgb(255 255 255 / 0.50);
+  --glass-highlight: rgb(255 255 255 / 0.80);
+  --glass-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.30) 0%, transparent 60%);
+  --glass-shadow: 0 1px 2px rgb(30 30 30 / 0.06), 0 12px 40px rgb(30 30 30 / 0.10);
+  --glass-shadow-sm: 0 1px 3px rgb(30 30 30 / 0.06);
+  --glass-control-shadow: inset 0 1px 2px rgb(30 30 30 / 0.06);
+  --glass-raised-shadow: 0 1px 2px rgb(30 30 30 / 0.10), 0 4px 12px rgb(30 30 30 / 0.08);
+  /* The rail stays dark in both themes. */
+  --glass-rail-bg: rgb(28 28 28 / 0.72);
+  --glass-rail-border: rgb(255 255 255 / 0.12);
+  --glass-rail-highlight: rgb(255 255 255 / 0.16);
+  --glass-blur: 28px;
+  --glass-saturate: 180%;
+  --ambient:
+    radial-gradient(64% 54% at 8% 2%, rgb(255 255 255 / 0.95), transparent 68%),
+    radial-gradient(54% 48% at 94% 8%, rgb(255 255 255 / 0.72), transparent 66%),
+    radial-gradient(58% 52% at 82% 98%, rgb(205 205 205 / 0.70), transparent 68%),
+    radial-gradient(50% 46% at 18% 94%, rgb(215 215 215 / 0.60), transparent 68%);
+
+  --status-good: #0ca30c;
+  --status-good-ink: #047004;
+  --status-good-wash: rgba(12, 163, 12, 0.10);
+  --status-warning: #fab219;
+  --status-warning-ink: #8a5a00;
+  --status-warning-wash: rgba(250, 178, 25, 0.16);
+  --status-serious: #ec835a;
+  --status-serious-ink: #b4461a;
+  --status-serious-wash: rgba(236, 131, 90, 0.14);
+  --status-critical: #d03b3b;
+  --status-critical-ink: #b91c1c;
+  --status-critical-wash: rgba(208, 59, 59, 0.10);
+  --status-neutral: #71717f;
+  --status-neutral-wash: rgba(113, 113, 127, 0.10);
+  --status-info: #2a78d6;
+  --status-info-ink: #1d4ed8;
+  --status-info-wash: rgba(42, 120, 214, 0.10);
+
+  /* The same eight hues, stepped for a white surface and validated against it.
+     Slots 3, 4 and 5 sit below 3:1 here, so every chart in light mode carries
+     a legend plus direct labels — the documented relief for that warning. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --series-7: #4a3aa7;
+  --series-8: #e34948;
+
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --chart-label: #898781;
+
+  --seq-100: #cde2fb;
+  --seq-200: #9ec5f4;
+  --seq-300: #6da7ec;
+  --seq-400: #3987e5;
+  --seq-500: #2a78d6;
+  --seq-600: #1c5cab;
+
+  --shadow-sm: var(--glass-shadow-sm);
+  --shadow-md: 0 4px 12px rgb(30 30 30 / 0.08), 0 1px 2px rgb(30 30 30 / 0.06);
+  --shadow-lg: var(--glass-shadow);
+  --shadow-focus: 0 0 0 3px var(--accent-ring);
+}
+
+/* Mode-invariant tokens: geometry, rhythm and motion. */
+:root {
+  /* Type scale. The UI sits mostly at 13–14px: a dense tool reads better
+     slightly tighter than a marketing page. */
+  /* One token decides the typeface. Monospace throughout is the house style;
+     set it to 'Inter Variable' (bundled too) for a proportional UI. */
+  --font-sans: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* The type scale lives in the @theme block in index.css. */
+
+
+  /* Radii. Generous on containers, tight on controls. */
+  /* Generous: content sits on rounded glass panels, so tiles read as soft insets. */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-full: 999px;
+
+  /* Layout constants the shell and its pages share. */
+  --sidebar-width: 16.5rem;
+  --rail-width: 4.25rem;
+  --sidebar-collapsed: 3.5rem;
+  --topbar-height: 3.25rem;
+  --content-max: 94rem;
+
+  /* Motion. Short and eased-out; anything slower feels laggy in a tool that
+     is navigated by keyboard. */
+  /* One decelerating "settle" curve for everything that moves. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-glass: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-glass-in: cubic-bezier(0.4, 0, 0.7, 0.2);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration: 180ms;
+  --duration-slow: 280ms;
+  --motion-view-in: 520ms;
+  --motion-view-out: 180ms;
+  --motion-indicator: 400ms;
+
+  --z-sticky: 10;
+  --z-dropdown: 40;
+  --z-overlay: 50;
+  --z-modal: 60;
+  --z-toast: 70;
+  --z-tooltip: 80;
+}
+
+/* Respect the OS setting when the user has not chosen explicitly. The inline
+   script in index.html resolves this before paint; this block covers a change
+   made while the app is open. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration: 0ms;
+    --duration-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* A user-set density preference tightens the vertical rhythm of list rows. */
+:root[data-density='compact'] {
+  --row-height: 2.25rem;
+  --row-padding-y: 0.3125rem;
+}
+:root {
+  --row-height: 2.75rem;
+  --row-padding-y: 0.5rem;
+}

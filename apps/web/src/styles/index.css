@@ -1,0 +1,542 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/**
+ * Tailwind v4 theme bridge.
+ *
+ * Every token is exposed to Tailwind's utility generator so a component can
+ * write `bg-surface-1` or `text-ink-secondary` instead of arbitrary values.
+ * The tokens stay the single source of truth; this block only publishes them.
+ */
+/*
+ * The type scale is mode-invariant, so it is declared here with literal values
+ * and Tailwind emits it to :root itself. It used to be bridged as
+ * `--text-xs: var(--text-xs)` — a self-reference, which is invalid CSS and only
+ * worked because tokens.css happened to load later and override it.
+ */
+@theme {
+  --text-2xs: 0.6875rem; /* 11px — metadata, counters */
+  --text-xs: 0.75rem;    /* 12px — labels, captions */
+  --text-sm: 0.8125rem;  /* 13px — the workhorse body size */
+  --text-base: 0.875rem; /* 14px — primary body */
+  --text-md: 0.9375rem;  /* 15px — emphasis */
+  --text-lg: 1.0625rem;  /* 17px — card titles */
+  --text-xl: 1.3125rem;  /* 21px — page titles */
+  --text-2xl: 1.625rem;  /* 26px — section heroes */
+  --text-3xl: 2.125rem;  /* 34px — stat tiles */
+  --text-4xl: 2.75rem;   /* 44px — hero figures */
+}
+
+/*
+ * Colour roles are bridged to Tailwind names. Same-named tokens (radius,
+ * shadow, font) are not bridged at all: Tailwind's utilities already read
+ * those names, and tokens.css supplies the per-theme values.
+ */
+@theme inline {
+  --color-page: var(--surface-page);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-inset: var(--surface-inset);
+
+  --color-ink: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-inverse: var(--ink-inverse);
+
+  --color-line-subtle: var(--line-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+
+  --color-good: var(--status-good);
+  --color-good-ink: var(--status-good-ink);
+  --color-warning: var(--status-warning);
+  --color-warning-ink: var(--status-warning-ink);
+  --color-serious: var(--status-serious);
+  --color-serious-ink: var(--status-serious-ink);
+  --color-critical: var(--status-critical);
+  --color-critical-ink: var(--status-critical-ink);
+  --color-info: var(--status-info);
+  --color-info-ink: var(--status-info-ink);
+
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-5: var(--series-5);
+  --color-series-6: var(--series-6);
+  --color-series-7: var(--series-7);
+  --color-series-8: var(--series-8);
+
+
+
+
+}
+
+/*
+ * Layering. Tailwind v4 puts utilities in `@layer utilities`, and any
+ * *unlayered* rule beats every layered one regardless of specificity. These
+ * base rules were once unlayered, so `a { color: inherit }` overrode every
+ * colour utility (accent links rendered grey) and `:focus-visible` overrode the
+ * radius of every focused control. Base and component rules therefore live in
+ * their layers; only keyframes and the forced-colours block are unlayered,
+ * the latter deliberately, because it must win.
+ */
+/* ------------------------------------------------------------------- base */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  /*
+   * Ambient wallpaper. Glass only reads as glass when there is something behind
+   * it to blur, so a fixed tint layer sits under every route.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--ambient);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--surface-page);
+    color: var(--ink-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    /* Grayscale smoothing keeps 13px text crisp on dark surfaces, where
+       subpixel rendering fringes. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    overscroll-behavior-y: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 600;
+    /* Tighter tracking at display sizes, which otherwise read loose. */
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+
+  p { margin: 0; }
+
+  button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  /*
+   * Native popups. A <select>'s open list, its options and the date picker are
+   * drawn by the browser, which cannot show the translucent glass background
+   * and substitutes white — with the app's white text on top. They get the
+   * opaque surface and follow the theme instead.
+   */
+  select,
+  input[type='date'],
+  input[type='datetime-local'],
+  input[type='time'] {
+    color-scheme: inherit;
+  }
+  select option,
+  select optgroup {
+    background-color: var(--surface-solid);
+    color: var(--ink-primary);
+  }
+  select option:disabled {
+    color: var(--ink-faint);
+  }
+
+  /* Autofill paints its own bright background over a dark field; an inset
+     shadow is the only thing that covers it. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--ink-primary);
+    caret-color: var(--ink-primary);
+    box-shadow: 0 0 0 1000px var(--surface-solid) inset;
+    transition: background-color 9999s ease-out 0s;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ------------------------------------------------------------------ focus */
+
+  /*
+   * Focus is never removed, only made conditional on keyboard navigation. A
+   * mouse user does not see a ring; a keyboard user always does, on every
+   * interactive element, which is what makes the app navigable without a mouse.
+   */
+  :focus { outline: none; }
+
+  :focus-visible {
+    outline: 2px solid var(--line-focus);
+    outline-offset: 2px;
+  }
+
+  /* ----------------------------------------------------------- scrollbars */
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: var(--radius-full);
+    /* The transparent border makes the thumb read as inset rather than filling
+       the gutter edge to edge. */
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover { background-color: var(--ink-faint); background-clip: content-box; }
+  *::-webkit-scrollbar-corner { background: transparent; }
+
+  ::selection {
+    background: var(--accent-wash-strong);
+    color: var(--ink-primary);
+  }
+}
+
+/* -------------------------------------------------------------- utilities */
+
+@utility surface-card {
+  background: var(--surface-1);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+}
+
+/* A hairline ring that reads as a border without occupying layout space. */
+@utility ring-hairline {
+  box-shadow: inset 0 0 0 1px var(--line-subtle);
+}
+
+@utility text-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Clips long single-line text with an ellipsis; needs a min-width:0 parent. */
+@utility truncate-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Visually hidden but available to assistive technology. */
+@utility sr-only-focusable {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- keyframes */
+
+@keyframes xs-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes xs-rise {
+  from { opacity: 0; transform: translateY(4px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes xs-slide-in-right {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes xs-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+@keyframes xs-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes xs-pulse-ring {
+  0% { box-shadow: 0 0 0 0 var(--accent-ring); }
+  70% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@layer components {
+  .xs-animate-in { animation: xs-rise var(--duration) var(--ease-out) both; }
+  .xs-animate-fade { animation: xs-fade-in var(--duration-fast) var(--ease-out) both; }
+  .xs-animate-panel { animation: xs-slide-in-right var(--duration) var(--ease-out) both; }
+
+  /* Skeleton shimmer, used while a page's data is in flight. */
+  .xs-skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--surface-2) 25%,
+      var(--surface-3) 37%,
+      var(--surface-2) 63%
+    );
+    background-size: 200% 100%;
+    animation: xs-shimmer 1.6s linear infinite;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Staggered list entrance. The delay is capped so a long list does not take
+     a visibly increasing time to appear. */
+  .xs-stagger > * {
+    animation: xs-rise var(--duration) var(--ease-out) both;
+  }
+  .xs-stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .xs-stagger > *:nth-child(2) { animation-delay: 24ms; }
+  .xs-stagger > *:nth-child(3) { animation-delay: 48ms; }
+  .xs-stagger > *:nth-child(4) { animation-delay: 72ms; }
+  .xs-stagger > *:nth-child(5) { animation-delay: 96ms; }
+  .xs-stagger > *:nth-child(6) { animation-delay: 120ms; }
+  .xs-stagger > *:nth-child(n + 7) { animation-delay: 140ms; }
+}
+
+
+/* ------------------------------------------------------------------- glass */
+
+@layer components {
+  /* Window-level glass: the rail, the navigator, the content panel, dialogs. */
+  .glass {
+    background-color: var(--glass-bg);
+    background-image: var(--glass-sheen);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /*
+   * Tiles inside a glass window. No second backdrop blur: the parent already
+   * blurred the wallpaper, so these are translucent fills with an edge.
+   */
+  .glass-tile {
+    background-color: var(--glass-tile);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Recessed: inputs and segmented tracks. */
+  .glass-control {
+    background-color: var(--glass-control);
+    border: 1px solid var(--glass-border-soft);
+    box-shadow: var(--glass-control-shadow);
+  }
+
+  /* Raised on a recessed track: the active tab, the active nav pill. */
+  .glass-raised {
+    background-color: var(--glass-raised-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-raised-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* The rail, which stays dark in both themes. */
+  .glass-rail {
+    background-color: var(--glass-rail-bg);
+    background-image: var(--glass-sheen);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-rail-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rail-highlight);
+    color: #f5f5f5;
+  }
+
+  /* Popovers, menus and dialogs that float above the panels. */
+  .glass-overlay {
+    background-color: var(--glass-bg);
+    background-image: var(--glass-sheen);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+  /* A dialog needs more opacity than a menu: it carries long reading content. */
+  :root[data-theme='dark'] .glass-overlay { background-color: rgb(20 20 20 / 0.82); }
+  :root[data-theme='light'] .glass-overlay { background-color: rgb(250 250 250 / 0.86); }
+
+  /*
+   * One pill per navigation group, moved to the active row, so switching
+   * sections reads as the highlight travelling rather than blinking.
+   */
+  .nav-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      transform var(--motion-indicator) var(--ease-glass),
+      width var(--motion-indicator) var(--ease-glass),
+      height var(--motion-indicator) var(--ease-glass),
+      opacity var(--duration) ease-out;
+  }
+  /* Before the first measurement it must not slide in from the origin. */
+  .nav-indicator[data-ready='false'] { transition: none; }
+  .nav-indicator[data-visible='true'] { opacity: 1; }
+
+  /* The routed page settles in rather than snapping. */
+  .route-view { animation: xs-view-enter var(--motion-view-in) var(--ease-glass) both; }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass, .glass-overlay, .glass-rail { backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .glass, .glass-overlay { background-color: rgb(18 18 18); background-image: none; }
+    :root[data-theme='light'] .glass, :root[data-theme='light'] .glass-overlay { background-color: #fafafa; }
+  }
+}
+
+@keyframes xs-view-enter {
+  from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.992); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes xs-branch-enter {
+  from { opacity: 0; transform: translate3d(0, -4px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* ------------------------------------------------------- print & contrast */
+
+@media (forced-colors: active) {
+  /* Let the OS palette through, but keep structure legible. */
+  .surface-card { border: 1px solid CanvasText; }
+  :focus-visible { outline: 2px solid Highlight; }
+}
+
+/* ------------------------------------------------------------------- prose */
+
+@layer components {
+  /*
+   * Markdown output. Styled here rather than with utility classes because the
+   * renderer emits plain tags; the selectors stay scoped under `.xs-prose`.
+   */
+  .xs-prose {
+    font-size: var(--text-sm);
+    line-height: 1.65;
+    color: var(--ink-secondary);
+  }
+
+  .xs-prose > * + * { margin-top: 0.75em; }
+
+  .xs-prose h2,
+  .xs-prose h3,
+  .xs-prose h4,
+  .xs-prose h5 {
+    color: var(--ink-primary);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .xs-prose h2 { font-size: var(--text-md); margin-top: 1.5em; }
+  .xs-prose h3 { font-size: var(--text-base); margin-top: 1.25em; }
+  .xs-prose h4,
+  .xs-prose h5 { font-size: var(--text-sm); margin-top: 1em; }
+  .xs-prose > h2:first-child,
+  .xs-prose > h3:first-child { margin-top: 0; }
+
+  .xs-prose strong { color: var(--ink-primary); font-weight: 600; }
+  .xs-prose em { font-style: italic; }
+  .xs-prose del { color: var(--ink-faint); }
+
+  .xs-prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+  }
+  .xs-prose a:hover { color: var(--accent-hover); }
+
+  .xs-prose code {
+    background: var(--surface-inset);
+    border: 1px solid var(--line-subtle);
+    border-radius: var(--radius-xs);
+    padding: 0.1em 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--ink-primary);
+  }
+
+  .xs-prose pre {
+    background: var(--surface-inset);
+    border: 1px solid var(--line-subtle);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 0.875rem;
+    overflow-x: auto;
+  }
+  .xs-prose pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: var(--text-xs);
+    line-height: 1.6;
+  }
+
+  .xs-prose ul,
+  .xs-prose ol { padding-left: 1.25rem; }
+  .xs-prose ul { list-style: disc; }
+  .xs-prose ol { list-style: decimal; }
+  .xs-prose li + li { margin-top: 0.25em; }
+  .xs-prose li::marker { color: var(--ink-faint); }
+
+  /* Task-list items drop the bullet, since the checkbox is the marker. */
+  .xs-prose li.xs-task { list-style: none; margin-left: -1.25rem; }
+  .xs-prose li.xs-task input { margin-right: 0.35em; accent-color: var(--accent); }
+  .xs-prose .xs-done { color: var(--ink-faint); text-decoration: line-through; }
+
+  .xs-prose blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: 0.875rem;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  .xs-prose hr { border: none; border-top: 1px solid var(--line-subtle); margin: 1.5em 0; }
+
+  /* Wiki links read as internal references, distinct from external links. */
+  .xs-prose .xs-wikilink {
+    background: var(--accent-wash);
+    border-radius: var(--radius-xs);
+    padding: 0.05em 0.3em;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .xs-prose .xs-wikilink:hover { background: var(--accent-wash-strong); }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "xenospace",
+  "private": true,
+  "version": "1.0.0",
+  "description": "XenoSpace - project management & development platform",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace=@xenospace/api & npm run dev --workspace=@xenospace/web",
+    "dev:api": "npm run dev --workspace=@xenospace/api",
+    "dev:web": "npm run dev --workspace=@xenospace/web",
+    "build": "npm run build --workspace=@xenospace/shared && npm run build --workspace=@xenospace/api && npm run build --workspace=@xenospace/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspace=@xenospace/api",
+    "db:migrate": "npm run db:migrate --workspace=@xenospace/api",
+    "db:seed": "npm run db:seed --workspace=@xenospace/api",
+    "db:reset": "npm run db:reset --workspace=@xenospace/api"
+  },
+  "overrides": {
+    "esbuild": "0.28.2"
+  }
+}

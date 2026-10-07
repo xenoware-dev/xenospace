@@ -1,0 +1,51 @@
+/** Stable error codes. Clients branch on these, never on message text. */
+export const ERROR_CODES = {
+  VALIDATION_FAILED: 'VALIDATION_FAILED',
+  UNAUTHENTICATED: 'UNAUTHENTICATED',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+  TOKEN_INVALID: 'TOKEN_INVALID',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  RATE_LIMITED: 'RATE_LIMITED',
+  PAYLOAD_TOO_LARGE: 'PAYLOAD_TOO_LARGE',
+  UNSUPPORTED_MEDIA_TYPE: 'UNSUPPORTED_MEDIA_TYPE',
+  CSRF_FAILED: 'CSRF_FAILED',
+  ACCOUNT_LOCKED: 'ACCOUNT_LOCKED',
+  ACCOUNT_INACTIVE: 'ACCOUNT_INACTIVE',
+  CREDENTIALS_INVALID: 'CREDENTIALS_INVALID',
+  TOTP_REQUIRED: 'TOTP_REQUIRED',
+  TOTP_INVALID: 'TOTP_INVALID',
+  EMAIL_TAKEN: 'EMAIL_TAKEN',
+  INVITE_INVALID: 'INVITE_INVALID',
+  ILLEGAL_TRANSITION: 'ILLEGAL_TRANSITION',
+  INTERNAL: 'INTERNAL',
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+} as const;
+
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
+/** Copy shown to the user when a request fails with the given code. */
+export const ERROR_MESSAGE: Record<ErrorCode, string> = {
+  VALIDATION_FAILED: 'Please check the highlighted fields.',
+  UNAUTHENTICATED: 'Please sign in to continue.',
+  TOKEN_EXPIRED: 'Your session expired. Signing you back in…',
+  TOKEN_INVALID: 'Your session is no longer valid. Please sign in again.',
+  FORBIDDEN: "You don't have access to this.",
+  NOT_FOUND: "We couldn't find what you were looking for.",
+  CONFLICT: 'Someone changed this first. Reload and try again.',
+  RATE_LIMITED: 'Too many attempts. Please wait a moment.',
+  PAYLOAD_TOO_LARGE: 'That file or request is too large.',
+  UNSUPPORTED_MEDIA_TYPE: "That file type isn't allowed.",
+  CSRF_FAILED: 'Your request could not be verified. Please retry.',
+  ACCOUNT_LOCKED: 'This account is temporarily locked after repeated failed sign-ins.',
+  ACCOUNT_INACTIVE: 'This account is not active. Contact your team lead.',
+  CREDENTIALS_INVALID: 'That email or password is incorrect.',
+  TOTP_REQUIRED: 'Enter your authenticator code.',
+  TOTP_INVALID: 'That code is incorrect or has expired.',
+  EMAIL_TAKEN: 'An account with that email already exists.',
+  INVITE_INVALID: 'This invitation is invalid or has expired.',
+  ILLEGAL_TRANSITION: "That status change isn't allowed from here.",
+  INTERNAL: 'Something went wrong on our end. Please try again.',
+  SERVICE_UNAVAILABLE: 'The service is temporarily unavailable.',
+};

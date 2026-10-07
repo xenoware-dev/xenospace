@@ -3,5 +3,13 @@ dist/
 build/
 .env
 .env.local
+.env.*.local
 *.log
 .DS_Store
+.pgdata/
+coverage/
+.vite/
+.turbo/
+*.tsbuildinfo
+.uploads/
+.pgdata.lock
